@@ -1,0 +1,24 @@
+<div class="min-h-screen flex flex-col justify-center items-center bg-gray-100">
+  <div class="max-w-md w-full p-6 bg-white rounded-lg shadow-md">
+    <!-- Logo -->
+    <div class="flex justify-center mb-8">
+      <div class="flex items-center">
+        <div class="w-10 h-10 bg-blue-500 rounded flex items-center justify-center">
+          <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+          </svg>
+        </div>
+        <div class="ml-2 text-2xl font-bold text-gray-900">Admin Portal</div>
+      </div>
+    </div>
+
+    <!-- Content from router -->
+    <router-outlet></router-outlet>
+  </div>
+
+  <!-- Footer -->
+  <div class="mt-8 text-center text-sm text-gray-500">
+    <p>&copy; 2025 Your Company. All rights reserved.</p>
+  </div>
+</div>

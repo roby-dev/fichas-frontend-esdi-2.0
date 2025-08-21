@@ -1,0 +1,115 @@
+<aside class="h-full flex flex-col">
+  <!-- Logo -->
+  <div class="h-16 flex items-center px-4 border-b border-slate-700">
+    <div class="flex items-center">
+      <div class="flex-shrink-0 w-8 h-8 bg-blue-500 rounded flex items-center justify-center">
+        <svg
+          class="w-5 h-5 text-white"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+        </svg>
+      </div>
+      @if(!isCollapsed()) {
+      <div class="ml-2 text-xl font-semibold text-white">Admin</div>
+      }
+    </div>
+  </div>
+
+  <!-- Navigation -->
+  <nav class="flex-1 overflow-y-auto py-4">
+    <ul class="space-y-1 px-2">
+      @for (item of menuItems(); track $index) { @if(!item.children) {
+      <li class="relative">
+        <a
+          [routerLink]="item.route"
+          routerLinkActive="bg-slate-700"
+          class="flex items-center px-2 py-2 text-sm font-medium rounded-md hover:bg-slate-700 transition-colors"
+        >
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" [attr.d]="item.icon"></path>
+          </svg>
+          @if(!isCollapsed()) {
+          <span class="ml-3">{{ item.title }}</span>
+          }
+        </a>
+      </li>
+      } @if (item.children) {
+      <li class="relative">
+        <!-- Parent item -->
+        <button
+          (click)="toggleSubmenu(item)"
+          class="w-full flex items-center justify-between px-2 py-2 text-sm font-medium rounded-md hover:bg-slate-700 transition-colors"
+        >
+          <div class="flex items-center">
+            <svg
+              class="w-5 h-5"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" [attr.d]="item.icon"></path>
+            </svg>
+            @if(!isCollapsed()) {
+            <span class="ml-3">{{ item.title }}</span>
+            }
+          </div>
+          @if(!isCollapsed()) {
+          <svg
+            class="w-4 h-4 transition-transform"
+            [ngClass]="{ 'rotate-180': item.expanded }"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+          </svg>
+          }
+        </button>
+
+        @if(item.expanded && !isCollapsed()){
+        <div class="mt-1 pl-3 space-y-1">
+          @for (child of item.children; track $index) {
+          <a
+            [routerLink]="child.route"
+            routerLinkActive="bg-slate-700"
+            class="flex items-center px-2 py-2 text-sm font-medium rounded-md text-slate-300 hover:bg-slate-700 transition-colors"
+          >
+            <svg
+              class="w-4 h-4"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" [attr.d]="child.icon"></path>
+            </svg>
+            <span class="ml-3">{{ child.title }}</span>
+          </a>
+          }
+        </div>
+        }
+      </li>
+      } }
+    </ul>
+  </nav>
+
+  @if(!isCollapsed()) {
+  <div class="p-4 border-t border-slate-700">
+    <a href="/profile" class="flex items-center">
+      <div class="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center text-white font-semibold text-sm">
+        A
+      </div>
+      <div class="ml-3">
+        <p class="text-sm font-medium text-white">Admin User</p>
+        <p class="text-xs text-slate-400">View profile</p>
+      </div>
+    </a>
+  </div>
+  }
+</aside>

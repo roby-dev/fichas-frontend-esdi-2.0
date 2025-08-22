@@ -1,3 +1,4 @@
+import { CommunityHallState } from '@/features/community-halls/states/community-hall.state.ts';
 import { ChangeDetectionStrategy, Component, inject, OnInit, signal } from '@angular/core';
 import { Router, RouterOutlet } from '@angular/router';
 import { CommonModule } from '@angular/common';
@@ -6,7 +7,8 @@ import { SidebarComponent } from '@/layouts/admin-layout/shared/sidebar/sidebar.
 import { CommitteeService } from '../../services/committee.service';
 import { CommitteeState } from '../../states/committee.state';
 import { COMMITTEE_ID_KEY, COMMITTEE_NAME_KEY } from '@/core/constants/constants';
-import { tap } from 'rxjs';
+import { forkJoin, switchMap, tap } from 'rxjs';
+import { ChildrenState } from '@/features/children/states/children.state';
 
 @Component({
   standalone: true,
@@ -17,15 +19,28 @@ import { tap } from 'rxjs';
 })
 export default class AdminLayoutComponent implements OnInit {
   isLoading = signal<boolean>(true);
-  isSidebarCollapsed = signal<boolean>(false);
+  isSidebarCollapsed = signal<boolean>(false); // escritorio
+  isMobileSidebarOpen = signal<boolean>(false); // móvil (drawer)
 
   private readonly commmitteeService = inject(CommitteeService);
   private readonly router = inject(Router);
 
   readonly committeeState = inject(CommitteeState);
+  private readonly communityHallState = inject(CommunityHallState);
+  private readonly childrenState = inject(ChildrenState);
 
   toggleSidebar(): void {
-    this.isSidebarCollapsed.set(!this.isSidebarCollapsed());
+    const isMobile = typeof window !== 'undefined' && window.matchMedia('(max-width: 767px)').matches;
+
+    if (isMobile) {
+      this.isMobileSidebarOpen.update((v) => !v);
+    } else {
+      this.isSidebarCollapsed.update((v) => !v);
+    }
+  }
+
+  closeMobileSidebar(): void {
+    this.isMobileSidebarOpen.set(false);
   }
 
   ngOnInit(): void {
@@ -41,17 +56,12 @@ export default class AdminLayoutComponent implements OnInit {
     this.commmitteeService
       .getCommitteeById(committeeId!)
       .pipe(
-        tap({
-          next: (res) => {
-            this.committeeState.setCommittee(res);
-          },
-        })
+        tap((res) => this.committeeState.setCommittee(res)),
+        switchMap(() => forkJoin([this.communityHallState.loadCommunityHalls(), this.childrenState.loadChildren()]))
       )
       .subscribe({
-        next: (res) => {
-          this.isLoading.set(false);
-        },
-        error: (err) => {
+        next: () => this.isLoading.set(false),
+        error: () => {
           this.router.navigate(['/admin/committee']);
           this.isLoading.set(false);
         },

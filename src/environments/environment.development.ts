@@ -1,4 +1,4 @@
 export const environment = {
   production: false,
-  apiUrl: 'https://fichas-esdi-backend.fly.dev',
+  apiUrl: 'http://localhost:3000',
 };

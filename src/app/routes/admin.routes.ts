@@ -8,6 +8,11 @@ export const ADMIN_ROUTES: Routes = [
     canActivate: [adminGuard, committeeGuard],
     loadComponent: () => import('@/features/dashboard/pages/dashboard/dashboard.component'),
   },
+    {
+    path: 'children',
+    canActivate: [adminGuard, committeeGuard],
+    loadComponent: () => import('@/features/children/pages/children/children.component'),
+  },
   {
     path: 'committee',
     canActivate: [adminGuard],

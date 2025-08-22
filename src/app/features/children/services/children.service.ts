@@ -20,8 +20,12 @@ export class ChildrenService {
     return this.http.get<Child[]>(`${this.baseUrl}?limit=${limit}&offset=${offset}`);
   }
 
+  getChildrenByCommittee(id: string): Observable<Child[]> {
+    return this.http.get<Child[]>(`${this.baseUrl}/by-committee/${id}`);
+  }
+
   updateChild(id: string, request: CreateUpdateChildRequest): Observable<Child> {
-    return this.http.put<Child>(`${this.baseUrl}/${id}`, request);
+    return this.http.patch<Child>(`${this.baseUrl}/${id}`, request);
   }
 
   deleteChild(id: string): Observable<void> {

@@ -1,8 +1,10 @@
+import { ChildrenState } from '@/features/children/states/children.state';
+import { CommunityHallState } from './../../../community-halls/states/community-hall.state.ts';
 import { ChangeDetectionStrategy, Component, inject, OnInit, signal } from '@angular/core';
 import { CommitteesService } from '../../services/committees.service';
 import { CommitteeState } from '../../../../layouts/admin-layout/states/committee.state';
 import { Committee } from '@/layouts/admin-layout/interfaces/committee.interface';
-import { tap } from 'rxjs';
+import { forkJoin, tap } from 'rxjs';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 
@@ -18,6 +20,8 @@ export default class CommitteeComponent implements OnInit {
   private readonly router = inject(Router);
 
   readonly committeeState = inject(CommitteeState);
+  readonly communityHallState = inject(CommunityHallState);
+  readonly childrenState = inject(ChildrenState);
 
   committees = signal<Committee[]>([]);
 
@@ -32,6 +36,7 @@ export default class CommitteeComponent implements OnInit {
         tap({
           next: (res) => {
             this.committees.set(res);
+            forkJoin([this.communityHallState.loadCommunityHalls(), this.childrenState.loadChildren()]).subscribe();
             console.log(res);
           },
           error: (err) => {

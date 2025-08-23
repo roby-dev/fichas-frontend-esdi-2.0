@@ -1,42 +1,57 @@
-<div class="flex flex-col gap-5 items-start">
-  <div class="self-end">
-    <button
-      (click)="openModal()"
-      class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition-all duration-[250ms]"
-    >
-      Agregar niño
-    </button>
-  </div>
+<div class="p-0 sm:p-4">
+  <h2 class="text-lg font-semibold mb-4">Niños</h2>
 
-  <div class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-4">
-    @for(child of childrenState.children(); track child.id) {
-    <app-child-card [child]="child" (click)="onSelectedChild(child)" class="cursor-pointer"></app-child-card>
-    }
+  <div class="flex flex-col gap-5 items-start">
+    <div class="w-full">
+      <input id="search" type="text" placeholder="Buscar por nombre o documento..." (input)="onSearch($event)"
+        class="mt-1 block w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm focus:border-blue-500 focus:ring-blue-500" />
+    </div>
+
+    <!-- Total de niños + botón -->
+    <div class="flex flex-row w-full justify-between items-center">
+      <div>
+        <span>
+          Total de niños:
+          <span class="font-bold text-white bg-blue-500 py-1 px-2 rounded">
+            {{ filteredChildren().length }}
+          </span>
+        </span>
+      </div>
+      <div class="self-end">
+        <button (click)="openModal()"
+          class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition-all duration-[250ms]">
+          Agregar niño
+        </button>
+      </div>
+    </div>
+
+    <!-- Grid de cards -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+      @for(child of filteredChildren(); track child.id) {
+      <app-child-card [child]="child" (click)="onSelectedChild(child)" class="cursor-pointer"></app-child-card>
+      }
+    </div>
   </div>
+  <!-- Input de búsqueda -->
+
 </div>
 
 <!-- Modal -->
 @if (isModalOpen()) {
 <!-- Backdrop -->
-<div
-  class="fixed inset-0 z-50 flex items-center justify-center"
-  aria-labelledby="modal-title"
-  role="dialog"
-  aria-modal="true"
->
+<div class="fixed inset-0 z-50 flex items-center justify-center" aria-labelledby="modal-title" role="dialog"
+  aria-modal="true">
   <!-- overlay -->
   <div class="absolute inset-0 bg-black/40" (click)="closeModal()" aria-hidden="true"></div>
 
   <!-- Modal panel -->
-  <div
-    class="relative z-10 w-full max-w-3xl mx-4 md:mx-0 bg-white rounded-lg shadow-lg overflow-hidden"
-    (click)="$event.stopPropagation()"
-  >
+  <div class="relative z-10 w-full max-w-3xl mx-4 md:mx-0 bg-white rounded-lg shadow-lg overflow-hidden"
+    (click)="$event.stopPropagation()">
     <!-- Header del modal -->
-    <div class="flex items-center justify-between px-6 py-3 border-b">
+    <div class="flex items-center justify-between px-4 py-3 border-b">
       <h3 id="modal-title" class="text-lg font-medium text-gray-900">
         {{
-          selectedChild() ? 'Editar niño' : 'Agregar niño'
+        selectedChild() ? 'Editar niño' : 'Agregar niño'
         }}
       </h3>
       <button (click)="closeModal()" class="text-gray-500 hover:text-gray-700">
@@ -49,13 +64,10 @@
     </div>
 
     <!-- Contenido: incluimos el componente del formulario -->
-    <div class="p-6">
+    <div class="p-1">
       <!-- Suponemos que app-child-form emite (saved) con el nuevo niño y (close) para solo cerrar -->
-      <app-child-form
-        [child]="selectedChild()"
-        [communityHalls]="communityHallState.communityHalls()"
-        (saveChildEvent)="onChildSaved($event)"
-      ></app-child-form>
+      <app-child-form [child]="selectedChild()" [communityHalls]="communityHallState.communityHalls()"
+        (saveChildEvent)="onChildSaved($event)" [isLoading]="isLoading()"></app-child-form>
     </div>
   </div>
 </div>

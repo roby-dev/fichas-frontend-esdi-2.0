@@ -1,15 +1,11 @@
-<div class="flex h-screen bg-gray-100" [class.overflow-hidden]="isMobileSidebarOpen()">
+<div class="flex h-dvh bg-gray-100" [class.overflow-hidden]="isMobileSidebarOpen()">
   @if(isLoading()){
-  <div class="w-full flex items-center justify-center">
-    <p>Cargando datos ...</p>
-  </div>
+  <app-loading></app-loading>
   }@else {
   <!-- Sidebar -->
-  <app-sidebar
-    [isCollapsed]="isSidebarCollapsed()"
-    class="hidden md:flex bg-slate-800 text-white transition-all duration-300"
-    [ngClass]="{ 'w-64': !isSidebarCollapsed(), 'w-16': isSidebarCollapsed() }"
-  >
+  <app-sidebar [isCollapsed]="isSidebarCollapsed()"
+    class="hidden md:flex bg-slate-800 text-white transition-all duration-300 "
+    [ngClass]="{ 'w-44': !isSidebarCollapsed(), 'w-16': isSidebarCollapsed() }">
   </app-sidebar>
 
   <div class="md:hidden">
@@ -19,27 +15,21 @@
     }
 
     <!-- Drawer -->
-    <div
-      class="fixed inset-y-0 left-0 z-50 transform transition-transform duration-300 bg-slate-800"
-      [ngClass]="{
+    <div class="fixed inset-y-0 left-0 z-50 transform transition-transform duration-300 bg-slate-800" [ngClass]="{
         '-translate-x-full': !isMobileSidebarOpen(),
         'translate-x-0': isMobileSidebarOpen()
-      }"
-      style="width: 16rem"
-    >
+      }" style="width: 16rem">
       <!-- Reutilizamos el componente sidebar pero forzamos expanded (no collapsed) dentro del drawer -->
-      <app-sidebar class="h-full bg-slate-800 text-white" [isCollapsed]="false"></app-sidebar>
+      <app-sidebar (toggleSidebarEvent)="toggleSidebar()" class="h-full bg-slate-800 text-white"
+        [isCollapsed]="false"></app-sidebar>
     </div>
   </div>
 
   <!-- Main Content -->
   <div class="flex flex-col flex-1 overflow-hidden">
     <!-- Header -->
-    <app-header
-      (toggleSidebarEvent)="toggleSidebar()"
-      class="bg-white shadow-sm"
-      [committeeName]="committeeState.committee()?.name"
-    >
+    <app-header (toggleSidebarEvent)="toggleSidebar()" class="bg-white shadow-sm"
+      [committeeName]="committeeState.committee()?.name">
     </app-header>
 
     <!-- Content Area -->

@@ -13,7 +13,7 @@ export class CommitteesService {
   private readonly baseUrl = `${environment.apiUrl}/api/v1/management-committees`;
 
   createCommittee(request: CreateCommitteeRequest) {
-    return this.http.post(`${this.baseUrl}`, request);
+    return this.http.post<Committee>(`${this.baseUrl}`, request);
   }
 
   getCommittees(): Observable<Committee[]> {

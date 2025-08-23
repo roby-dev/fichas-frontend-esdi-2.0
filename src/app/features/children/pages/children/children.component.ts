@@ -6,6 +6,7 @@ import {
   inject,
   signal,
   provideExperimentalZonelessChangeDetection,
+  computed,
 } from '@angular/core';
 import { ChildCardComponent } from '../../components/child-card/child-card.component';
 import { CommunityHallState } from '@/features/community-halls/states/community-hall.state.ts';
@@ -13,6 +14,7 @@ import { ChildrenState } from '../../states/children.state';
 import { ChildFormComponent } from '../../components/child-form/child-form/child-form.component';
 import { CreateUpdateChildRequest } from '../../interfaces/create-update-child-request.interface';
 import { ChildrenService } from '../../services/children.service';
+import { switchMap } from 'rxjs';
 
 @Component({
   selector: 'app-children',
@@ -28,6 +30,25 @@ export default class ChildrenComponent {
 
   selectedChild = signal<Child | null>(null);
   isModalOpen = signal(false);
+  isLoading = signal(false);
+
+  searchTerm = signal<string>('');
+
+  filteredChildren = computed(() => {
+    const term = this.searchTerm().toLowerCase().trim();
+    if (!term) return this.childrenState.children();
+
+    return this.childrenState.children().filter((child) =>
+      child.documentNumber.toLowerCase().includes(term) ||
+      child.firstName.toLowerCase().includes(term) ||
+      child.lastName.toLowerCase().includes(term)
+    );
+  });
+
+  onSearch(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    this.searchTerm.set(input.value);
+  }
 
   openModal(): void {
     this.isModalOpen.set(true);
@@ -36,23 +57,34 @@ export default class ChildrenComponent {
     // y exponer un método focusFirst() para llamarlo aquí.
   }
 
-  // cierra modal
   closeModal(): void {
     this.isModalOpen.set(false);
     this.selectedChild.set(null);
   }
 
-  // manejar guardado del form
   onChildSaved(child: CreateUpdateChildRequest): void {
-    if (this.selectedChild()) {
-      this.childrenService.updateChild(this.selectedChild()!.id, child).subscribe();
-    } else {
-      this.childrenService.createChild(child).subscribe();
-    }
-    this.closeModal();
+    this.isLoading.set(true);
+
+    const request$ = this.selectedChild()
+      ? this.childrenService.updateChild(this.selectedChild()!.id, child)
+      : this.childrenService.createChild(child);
+
+    request$
+      .pipe(
+        switchMap(() => this.childrenState.loadChildren())
+      )
+      .subscribe({
+        next: () => {
+          this.isLoading.set(false);
+          this.closeModal();
+        },
+        error: (err) => {
+          this.isLoading.set(false);
+          console.error(err)
+        },
+      });
   }
 
-  // cerrar con tecla Esc (a nivel ventana)
   @HostListener('window:keydown.escape', ['$event'])
   onEscapePressed(event: KeyboardEvent) {
     if (this.isModalOpen()) {

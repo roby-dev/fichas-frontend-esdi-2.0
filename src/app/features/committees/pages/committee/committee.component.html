@@ -1,8 +1,8 @@
-<div class="p-4">
-  <h2 class="text-xl font-bold mb-4">Seleccione un Comité</h2>
+<div class="p-0 sm:p-4">
+  <h2 class="text-lg font-semibold mb-4">Seleccione Comité</h2>
 
   <ul class="space-y-2">
-    @for(committee of committees(); track committee.id) {
+    @for(committee of committeeState.committees(); track committee.id) {
     <li
       (click)="selectCommittee(committee)"
       class="cursor-pointer px-4 py-2 rounded-lg border transition"

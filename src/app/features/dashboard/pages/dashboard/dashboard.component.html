@@ -1,1 +1,51 @@
-<p>Dashboard</p>
+<div class="p-0 sm:p-4">
+  <h2 class="text-lg font-semibold mb-4">Resumen</h2>
+
+  <div class="flex flex-col gap-4">
+    <div class="p-4 bg-white shadow-sm cursor-pointer" (click)="goTo('/admin/children')">
+      <div class="flex justify-between items-center mb-4">
+        <div class="text-sm font-medium text-gray-700">
+          <span>Total de niños registrados</span>
+        </div>
+        <div>
+          <span class='bg-blue-500 text-white px-2 py-1 rounded'>
+            {{ childrenState.children().length }}
+          </span>
+        </div>
+      </div>
+      <hr class="mb-4 text-gray-300" />
+      <!-- Ingreso aplicable -->
+      <div class="mb-4">
+        <div class="flex justify-between text-sm mb-1">
+          <span>Ingreso Aplicable</span>
+          <span>{{ admittedPercent() }}%</span>
+        </div>
+        <div class="w-full bg-gray-200 rounded-full h-2.5">
+          <div class="bg-green-500 h-2.5 rounded-full" [style.width.%]="admittedPercent()"></div>
+        </div>
+      </div>
+
+      <!-- Egreso aplicable -->
+      <div class="mb-4">
+        <div class="flex justify-between text-sm mb-1">
+          <span>Egreso Aplicable</span>
+          <span>{{ graduatedPercent() }}%</span>
+        </div>
+        <div class="w-full bg-gray-200 rounded-full h-2.5">
+          <div class="bg-blue-500 h-2.5 rounded-full" [style.width.%]="graduatedPercent()"></div>
+        </div>
+      </div>
+
+      <!-- No aplicables -->
+      <div>
+        <div class="flex justify-between text-sm mb-1">
+          <span>No Aplicables</span>
+          <span>{{ notApplicablePercent() }}%</span>
+        </div>
+        <div class="w-full bg-gray-200 rounded-full h-2.5">
+          <div class="bg-red-500 h-2.5 rounded-full" [style.width.%]="notApplicablePercent()"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

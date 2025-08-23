@@ -1,6 +1,6 @@
 import { inject, Injectable, signal } from '@angular/core';
 import { CommunityHall } from '../interfaces/community.interface';
-import { CommitteeState } from '@/layouts/admin-layout/states/committee.state';
+import { CommitteeState } from '@/features/committees/states/committee.state';
 import { CommunityHallsService } from '../services/community-halls.service';
 import { tap } from 'rxjs';
 

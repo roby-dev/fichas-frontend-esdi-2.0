@@ -1,0 +1,17 @@
+<div class="p-0 sm:p-4">
+  <h2 class="text-lg font-semibold mb-4">Locales Comunales</h2>
+
+  <!-- Vista móvil -->
+  <div class="grid gap-3 mt-4">
+    @for(hall of communityHallState.communityHalls(); track hall.id) {
+    <div class="p-3 shadow-sm bg-white">
+      <p class="text-xs text-gray-500">Local ID</p>
+      <p class="font-medium text-gray-800">{{ hall.localId }}</p>
+
+      <p class="mt-2 text-xs text-gray-500">Nombre</p>
+      <p class="font-medium text-gray-800">{{ hall.name }}</p>
+    </div>
+    }
+
+  </div>
+</div>

@@ -19,6 +19,11 @@ export const ADMIN_ROUTES: Routes = [
     loadComponent: () => import('@/features/committees/pages/committee/committee.component'),
   },
   {
+    path: 'community-halls',
+    canActivate: [adminGuard, committeeGuard],
+    loadComponent: () => import('@/features/community-halls/pages/community-halls/community-halls.component'),
+  },
+  {
     path: 'unauthorized',
     loadComponent: () => import('@/features/unauthorized/pages/unauthorized/unauthorized.component'),
   },

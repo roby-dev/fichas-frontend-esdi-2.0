@@ -1,31 +1,35 @@
-<div class="bg-white p-4 space-y-2">
-  <div class="flex items-center justify-between text-sm text-gray-500">
-    <div class="flex space-x-4">
-      <span>{{ child().documentNumber }}</span>
-      <span>{{ child().admissionDate | date : 'dd MMM. yyyy' : 'UTC' }}</span>
-      <span> {{ child().ageInMonths }} meses </span>
+<div class="bg-white p-4 space-y-2 lg:h-[200px] flex flex-col justify-between">
+  <div class="flex flex-col gap-1">
+    <div class="flex items-center justify-start text-sm gap-4 text-gray-600 font-extralight">
+      <div>
+        <span>{{ child().documentNumber }}</span>
+      </div>
+      <div>
+        <span>{{ child().admissionDate | date : 'dd MMM. yyyy' : 'UTC' }}</span>
+      </div>
+      <div>
+        <span> {{ child().ageInMonths }} meses </span>
+      </div>
     </div>
+
+    <div class="flex items-center justify-between gap-1">
+      <div class="max-w-[200px]">
+        <span class="text-lg font-bold text-gray-800"> </span>
+        {{ fullName }}
+      </div>
+      <div>
+        <span class="px-2 py-1 rounded text-white text-center text-xs font-medium" [ngClass]="{
+            'bg-red-500/80': statusColor === 'red',
+            'bg-blue-500/80': statusColor === 'blue'
+          }">
+          {{ statusLabel }}
+        </span>
+      </div>
+    </div>
+
   </div>
 
-  <div class="flex items-center justify-between gap-1">
-    <div class="max-w-[200px]">
-      <span class="text-lg font-bold text-gray-800"> </span>
-      {{ fullName }}
-    </div>
-    <div>
-      <span
-        class="px-2 py-1 rounded text-white text-center text-xs font-medium"
-        [ngClass]="{
-          'bg-red-500/80': statusColor === 'red',
-          'bg-blue-500/80': statusColor === 'blue'
-        }"
-      >
-        {{ statusLabel }}
-      </span>
-    </div>
-  </div>
-
-  <div class="text-sm text-gray-500 italic space-y-1 mt-3">
+  <div class="text-[13px] md:text-sm text-gray-500 italic space-y-1 font-light flex flex-col gap-1">
     <div class="">
       <span>{{ child().admissionFormatted }}</span>
     </div>

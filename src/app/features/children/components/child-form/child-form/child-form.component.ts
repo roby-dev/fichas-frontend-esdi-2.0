@@ -15,6 +15,7 @@ import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angula
 export class ChildFormComponent implements OnInit {
   private readonly fb = inject(FormBuilder);
 
+  isLoading = input.required<boolean>();
   child = input<CreateUpdateChildRequest | null>(null);
   communityHalls = input.required<CommunityHall[]>();
 
@@ -41,7 +42,7 @@ export class ChildFormComponent implements OnInit {
 
   private initForm(): void {
     this.form = this.fb.group({
-      documentNumber: ['', Validators.required],
+      documentNumber: ['', [Validators.required, Validators.minLength(8), Validators.maxLength(8)]],
       firstName: ['', Validators.required],
       lastName: ['', Validators.required],
       birthday: [null, Validators.required],

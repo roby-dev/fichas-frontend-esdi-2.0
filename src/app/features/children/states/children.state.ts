@@ -2,7 +2,7 @@ import { inject, Injectable, signal } from '@angular/core';
 import { Child } from '../interfaces/child.interface';
 import { ChildrenService } from '../services/children.service';
 import { tap } from 'rxjs';
-import { CommitteeState } from '@/layouts/admin-layout/states/committee.state';
+import { CommitteeState } from '@/features/committees/states/committee.state';
 
 @Injectable({
   providedIn: 'root',

@@ -1,7 +1,7 @@
 <div>
-  <h2 class="text-2xl font-bold text-gray-900 mb-6">Ingresa</h2>
+  @if(!isUserCreated()){
+  <h2 class="text-2xl font-bold text-gray-900 mb-6">Regístrate</h2>
 
-  <!-- Error Alert -->
   @if(error()){
   <div class="bg-red-50 border-l-4 border-red-500 p-4 mb-6">
     <div class="flex">
@@ -20,7 +20,7 @@
   </div>
   }
 
-  <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+  <form [formGroup]="registerForm" (ngSubmit)="onSubmit()">
     <!-- Email Input -->
     <div class="mb-4">
       <label for="email" class="block text-sm font-medium text-gray-700 mb-1">Correo electrónico</label>
@@ -57,10 +57,10 @@
     </div>
 
     <!-- Submit Button -->
-    <button type="submit" [disabled]="loginForm.invalid || isLoading()"
+    <button type="submit" [disabled]="registerForm.invalid || isLoading()"
       class="w-full py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50">
       @if(!isLoading()) {
-      <span> Ingresar</span>
+      <span> Registrar</span>
       }@else{
       <div class="flex justify-center items-center">
         <svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none"
@@ -70,7 +70,7 @@
             d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
           </path>
         </svg>
-        <span>Guardando...</span>
+        <span>Ingresando...</span>
       </div>
       }
     </button>
@@ -78,8 +78,14 @@
 
   <div class="mt-5 text-center">
     <p class="text-sm text-gray-600">
-      ¿No tienes una cuenta?
+      ¿Ya tienes una cuenta?
     </p>
-    <a routerLink="/auth/register" class="text-sm font-medium text-blue-600 hover:text-blue-500">Regístrate aqui</a>
+    <a routerLink="/auth/login" class="text-sm font-medium text-blue-600 hover:text-blue-500">Ingresa aqui</a>
+
   </div>
+  }@else {
+  <p class="font-bold">Felicitaciones, su usuario fue creado.</p>
+  <p class="mt-3">Ahora puedes ingresar con tu correo y contraseña <a
+      class="font-medium text-blue-600 hover:text-blue-500" routerLink="/auth/login">desde aquí.</a> </p>
+  }
 </div>

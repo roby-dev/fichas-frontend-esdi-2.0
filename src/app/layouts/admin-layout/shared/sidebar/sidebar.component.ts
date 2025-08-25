@@ -20,7 +20,7 @@ export interface MenuItem {
 export class SidebarComponent {
   isCollapsed = input<boolean>(false);
   userState = inject(UserState);
-  userName = computed(() => this.userState.user()!.email.split('@')[0]);
+  userName = computed(() => this.userState.user()?.email.split('@')[0] ?? '');
   toggleSidebarEvent = output<void>();
 
   menuItems = signal<MenuItem[]>([
@@ -69,8 +69,7 @@ export class SidebarComponent {
     }
   }
 
-
   closeSidebar() {
-    this.toggleSidebarEvent.emit()
+    this.toggleSidebarEvent.emit();
   }
 }

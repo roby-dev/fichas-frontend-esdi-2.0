@@ -1,4 +1,4 @@
-import { Committee } from '@/layouts/admin-layout/interfaces/committee.interface';
+import { Committee } from '@/features/committees/interfaces/committee.interface';
 
 export interface CommunityHall {
   id: string;

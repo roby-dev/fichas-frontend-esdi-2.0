@@ -6,6 +6,8 @@ import { CommitteeState } from '../../../../features/committees/states/committee
 import { UserState } from '@/features/users/states/user.state';
 import { CommunityHallState } from '@/features/community-halls/states/community-hall.state.ts';
 import { ChildrenState } from '@/features/children/states/children.state';
+import { AuthService } from '@/core/services/auth.service';
+import { AdminCommitteeState } from '@/features/committees/states/admin-committee.state';
 
 @Component({
   standalone: true,
@@ -17,16 +19,16 @@ import { ChildrenState } from '@/features/children/states/children.state';
 export class HeaderComponent {
   private readonly router = inject(Router);
   private readonly committeeState = inject(CommitteeState);
+  private readonly adminComitteeState = inject(AdminCommitteeState);
   private readonly communityHallState = inject(CommunityHallState);
   private readonly childrenState = inject(ChildrenState);
 
+  readonly authService = inject(AuthService);
   readonly userState = inject(UserState);
 
-  role = computed(() => this.userState.user()?.roles.includes('Admin')
-    ? 'Administrador'
-    : 'Usuario');
+  role = computed(() => (this.userState.user()?.roles.includes('admin') ? 'Administrador' : 'Usuario'));
 
-  userName = computed(() => this.userState.user()!.email.split('@')[0]);
+  userName = computed(() => this.userState.user()?.email.split('@')[0] ?? '');
 
   toggleSidebarEvent = output<void>();
   committeeName = input<string>();
@@ -51,9 +53,10 @@ export class HeaderComponent {
     localStorage.removeItem(REFRESH_TOKEN_KEY);
     this.committeeState.clearCommittee();
     this.userState.clearUser();
+    this.userState.clearUsers();
     this.childrenState.clearChildren();
     this.communityHallState.clearCommunityHalls();
-
+    this.adminComitteeState.clearCommittee();
     this.router.navigate(['/auth']);
   }
 }

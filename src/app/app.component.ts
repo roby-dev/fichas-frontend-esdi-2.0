@@ -1,12 +1,47 @@
-import { Component } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { Component, signal } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet],
+  imports: [RouterOutlet, CommonModule],
   templateUrl: './app.component.html',
-  styleUrl: './app.component.css'
+  styleUrls: ['./app.component.css'],
 })
 export class AppComponent {
   title = 'fichas-frontend-2.0';
+
+  deferredPrompt: any = null;
+
+  installAvailable = signal<boolean>(false);
+  showInstallSheet = signal<boolean>(false);
+
+  constructor() {
+    window.addEventListener('beforeinstallprompt', (event: Event) => {
+      event.preventDefault();
+      this.deferredPrompt = event;
+      this.installAvailable.set(true);
+      this.showInstallSheet.set(true); // abre el bottomsheet automáticamente
+    });
+  }
+
+  installApp() {
+    if (!this.deferredPrompt) return;
+
+    this.deferredPrompt.prompt();
+    this.deferredPrompt.userChoice.then((choiceResult: any) => {
+      if (choiceResult.outcome === 'accepted') {
+        console.log('✅ Usuario instaló la app');
+      } else {
+        console.log('❌ Usuario canceló');
+      }
+      this.deferredPrompt = null;
+      this.installAvailable.set(false);
+      this.showInstallSheet.set(false);
+    });
+  }
+
+  closeSheet() {
+    this.showInstallSheet.set(false);
+  }
 }

@@ -5,6 +5,7 @@ import { environment } from 'src/environments/environment';
 import { Committee } from '../interfaces/committee.interface';
 import { CreateCommitteeRequest } from '../interfaces/create-committee-request.interface';
 import { AdminCommittee } from '../interfaces/admin-committee.interface';
+import { AssignCommitteeRequest } from '../interfaces/assign-committee-request.interface';
 
 @Injectable({
   providedIn: 'root',
@@ -14,6 +15,10 @@ export class AdminCommitteesService {
   private readonly baseUrl = `${environment.apiUrl}/api/v1/committees`;
 
   createCommittee(request: CreateCommitteeRequest): Observable<AdminCommittee> {
+    return this.http.post<AdminCommittee>(`${this.baseUrl}`, request);
+  }
+
+  createCommitteeForUser(request: AssignCommitteeRequest): Observable<AdminCommittee> {
     return this.http.post<AdminCommittee>(`${this.baseUrl}`, request);
   }
 

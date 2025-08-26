@@ -1,0 +1,28 @@
+@if (isOpen()) {
+<div class="fixed inset-0 z-50 flex items-center justify-center" role="dialog" aria-modal="true">
+  <!-- overlay -->
+  <div class="absolute inset-0 bg-black/40" aria-hidden="true" (click)="closeOnOverlayClick() && close()"></div>
+
+  <!-- Modal panel -->
+  <div
+    class="relative z-10 w-full {{ sizeClasses() }} mx-4 md:mx-0 bg-white rounded-lg shadow-lg overflow-hidden"
+    (click)="$event.stopPropagation()"
+  >
+    <!-- Header -->
+    <div class="flex items-center justify-between px-4 py-3 border-b">
+      <h3 id="modal-title" class="text-lg font-medium text-gray-900">{{ title() }}</h3>
+      <button (click)="close()" class="text-gray-500 hover:text-gray-700 cursor-pointer">
+        <span class="sr-only">Cerrar</span>
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+        </svg>
+      </button>
+    </div>
+
+    <!-- Content -->
+    <div class="p-4">
+      <ng-content></ng-content>
+    </div>
+  </div>
+</div>
+}

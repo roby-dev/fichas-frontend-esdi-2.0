@@ -1,20 +1,18 @@
 <h2 class="text-lg font-semibold mb-4">Administración de comités</h2>
 
-<div class="flex flex-row justify-between items-center mb-4">
+<div class="flex flex-col sm:flex-row sm:justify-between sm:items-center items-start mb-4 gap-2 sm:gap-0">
   <h3 class="text-base font-semibold">Comités creados</h3>
-  <button
-    (click)="openModal()"
-    class="rounded-lg bg-blue-600 px-4 py-2 text-white text-sm font-medium hover:bg-blue-700 disabled:opacity-50"
-  >
-    Agregar comité
-  </button>
+  <div class="flex flex-row gap-2 self-end">
+    <app-button (action)="openAssignModal()" [label]="'Asignar'" [outline]="true" />
+    <app-button (action)="openCreateUpdateModal()" [label]="'Crear'" />
+  </div>
 </div>
 
 <div class="overflow-x-auto">
   <table class="min-w-full divide-y divide-gray-200 border rounded-lg">
     <thead class="bg-gray-50">
       <tr>
-        <th class="px-4 py-2 text-left text-sm font-medium text-gray-600">ID</th>
+        <th class="px-4 py-2 text-center text-sm font-medium text-gray-600 w-[50px]">ID</th>
         <th class="px-4 py-2 text-left text-sm font-medium text-gray-600">Nombre</th>
       </tr>
     </thead>
@@ -33,7 +31,7 @@
   </table>
 </div>
 
-<hr class="my-10 text-gray-500" />
+<hr class="my-7 text-gray-500" />
 
 <h3 class="text-base font-semibold mb-4">Comités asignados</h3>
 
@@ -41,7 +39,7 @@
   <table class="min-w-full divide-y divide-gray-200 border rounded-lg">
     <thead class="bg-gray-50">
       <tr>
-        <th class="px-4 py-2 text-left text-sm font-medium text-gray-600">ID</th>
+        <th class="px-4 py-2 text-center text-sm font-medium text-gray-600 w-[50px]">ID</th>
         <th class="px-4 py-2 text-left text-sm font-medium text-gray-600">Nombre</th>
         <th class="px-4 py-2 text-left text-sm font-medium text-gray-600">Usuario</th>
       </tr>
@@ -62,45 +60,28 @@
   </table>
 </div>
 
-@if (isModalOpen()) {
-<!-- Backdrop -->
-<div
-  class="fixed inset-0 z-50 flex items-center justify-center"
-  aria-labelledby="modal-title"
-  role="dialog"
-  aria-modal="true"
+<app-modal
+  [isOpen]="isCreateUpdateModalOpen()"
+  [title]="selectedComittee() ? 'Editar comité' : 'Agregar comité'"
+  size="lg"
+  (closed)="closeCreateUpdateModal()"
 >
-  <!-- overlay -->
-  <div class="absolute inset-0 bg-black/40" (click)="closeModal()" aria-hidden="true"></div>
+  <app-committee-form
+    [committee]="selectedComittee()"
+    (saveComitteeEvent)="onCommitteeSaved($event)"
+    [isLoading]="isLoading()"
+  />
+</app-modal>
 
-  <!-- Modal panel -->
-  <div
-    class="relative z-10 w-full max-w-3xl mx-4 md:mx-0 bg-white rounded-lg shadow-lg overflow-hidden"
-    (click)="$event.stopPropagation()"
-  >
-    <!-- Header del modal -->
-    <div class="flex items-center justify-between px-4 py-3 border-b">
-      <h3 id="modal-title" class="text-lg font-medium text-gray-900">
-        {{ selectedComittee() ? 'Editar comité' : 'Agregar comité' }}
-      </h3>
-      <button (click)="closeModal()" class="text-gray-500 hover:text-gray-700">
-        <span class="sr-only">Cerrar</span>
-        <!-- icono 'x' -->
-        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-        </svg>
-      </button>
-    </div>
+<app-modal
+  [isOpen]="isAssignModalOpen()"
+  [title]="'Asignar comité a usuario'"
+  size="lg"
+  (closed)="closeAssignModal()"
+>
+  <app-assign-committee-form
+    (saveAssignCommitteeEvent)="onAssignSaved($event)"
+    [isLoading]="isLoading()"
+  />
+</app-modal>
 
-    <!-- Contenido: incluimos el componente del formulario -->
-    <div class="p-1">
-      <!-- Suponemos que app-child-form emite (saved) con el nuevo niño y (close) para solo cerrar -->
-      <app-committee-form
-        [committee]="selectedComittee()"
-        (saveComitteeEvent)="onCommitteeSaved($event)"
-        [isLoading]="isLoading()"
-      ></app-committee-form>
-    </div>
-  </div>
-</div>
-}

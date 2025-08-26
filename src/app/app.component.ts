@@ -18,10 +18,13 @@ export class AppComponent {
 
   constructor() {
     window.addEventListener('beforeinstallprompt', (event: Event) => {
+      if (!this.isMobile()) {
+        return;
+      }
       event.preventDefault();
       this.deferredPrompt = event;
       this.installAvailable.set(true);
-      this.showInstallSheet.set(true); // abre el bottomsheet automáticamente
+      this.showInstallSheet.set(true);
     });
   }
 
@@ -43,5 +46,9 @@ export class AppComponent {
 
   closeSheet() {
     this.showInstallSheet.set(false);
+  }
+
+  isMobile(): boolean {
+    return /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
   }
 }

@@ -60,8 +60,8 @@
   </table>
 </div>
 
+@if(isCreateUpdateModalOpen()){
 <app-modal
-  [isOpen]="isCreateUpdateModalOpen()"
   [title]="selectedComittee() ? 'Editar comité' : 'Agregar comité'"
   size="lg"
   (closed)="closeCreateUpdateModal()"
@@ -72,16 +72,13 @@
     [isLoading]="isLoading()"
   />
 </app-modal>
-
-<app-modal
-  [isOpen]="isAssignModalOpen()"
-  [title]="'Asignar comité a usuario'"
-  size="lg"
-  (closed)="closeAssignModal()"
->
+} @if(isAssignModalOpen()){
+<app-modal [title]="'Asignar comité a usuario'" size="lg" (closed)="closeAssignModal()">
   <app-assign-committee-form
+    [committees]="adminCommitteeState.committees()"
+    [users]="userState.users()"
     (saveAssignCommitteeEvent)="onAssignSaved($event)"
     [isLoading]="isLoading()"
   />
 </app-modal>
-
+}

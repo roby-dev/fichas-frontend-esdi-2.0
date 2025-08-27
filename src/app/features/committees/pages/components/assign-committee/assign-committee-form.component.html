@@ -1,28 +1,28 @@
 <form [formGroup]="form" (ngSubmit)="onSubmit()" class="space-y-4 p-4">
   <div>
-    <label class="block text-sm font-medium text-gray-700">ID Comité</label>
-    <input
-      type="text"
+    <label class="block text-sm font-medium text-gray-700">Comité de Gestión</label>
+    <select
       formControlName="committeeId"
-      class="mt-1 block w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:ring-blue-500"
-    />
-    <div *ngIf="form.get('committeeId')?.touched && form.get('committeeId')?.invalid" class="text-red-500 text-xs mt-1">
-      ID requerido
-    </div>
+      class="mt-1 block w-full rounded-lg border border-gray-300 px-3 py-2 text-sm bg-white focus:border-blue-500 focus:ring-blue-500"
+    >
+      <option value="" disabled>Seleccione Comité de Gestión</option>
+      @for(committee of committees(); track committee.id){
+      <option [value]="committee.id">{{ committee.committeeId }} - {{ committee.name }}</option>
+      }
+    </select>
   </div>
 
   <div>
-    <div>
-      <label class="block text-sm font-medium text-gray-700">Nombre Comité</label>
-      <input
-        type="text"
-        formControlName="name"
-        class="mt-1 block w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:ring-blue-500"
-      />
-      <div *ngIf="form.get('name')?.touched && form.get('name')?.invalid" class="text-red-500 text-xs mt-1">
-        Nombre requerido
-      </div>
-    </div>
+    <label class="block text-sm font-medium text-gray-700">Usuario</label>
+    <select
+      formControlName="userId"
+      class="mt-1 block w-full rounded-lg border border-gray-300 px-3 py-2 text-sm bg-white focus:border-blue-500 focus:ring-blue-500"
+    >
+      <option value="" disabled>Seleccione Usuario</option>
+      @for(user of users(); track user.email){
+      <option [value]="user.id">{{ user.email }}</option>
+      }
+    </select>
   </div>
 
   <div class="flex justify-end">

@@ -2,8 +2,7 @@ import { UsersService } from '@/features/users/services/users.service';
 import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { Router, RouterLink } from '@angular/router';
-import { tap, catchError, of } from 'rxjs';
+import { RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-register',
@@ -13,7 +12,6 @@ import { tap, catchError, of } from 'rxjs';
 })
 export default class RegisterComponent {
   private readonly userService = inject(UsersService);
-  private readonly router = inject(Router);
   private readonly fb = inject(FormBuilder);
 
   registerForm: FormGroup;
@@ -36,18 +34,15 @@ export default class RegisterComponent {
     this.isLoading.set(true);
     this.error.set('');
 
-    this.userService
-      .createUser(this.registerForm.value)
-      .subscribe({
-        next: () => {
-          this.isLoading.set(false);
-          this.isUserCreated.set(true);
-        },
-        error: (err) => {
-          this.error.set(err.message);
-          this.isLoading.set(false);
-        },
-      });
+    this.userService.createUser(this.registerForm.value).subscribe({
+      next: () => {
+        this.isLoading.set(false);
+        this.isUserCreated.set(true);
+      },
+      error: (err) => {
+        this.isLoading.set(false);
+      },
+    });
   }
 
   get emailControl() {

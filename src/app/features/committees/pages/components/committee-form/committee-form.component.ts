@@ -23,6 +23,7 @@ export class CommitteeFormComponent {
     this.initForm();
 
     const c = this.committee();
+    console.log(c);
     if (c) {
       this.form.patchValue({
         committeeId: c.committeeId ?? '',

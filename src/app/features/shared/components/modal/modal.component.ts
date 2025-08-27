@@ -15,7 +15,6 @@ import {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ModalComponent {
-  isOpen = input.required<boolean>();
   title = input<string>('');
   size = input<'sm' | 'md' | 'lg' | 'xl'>('md');
   closeOnOverlayClick = input<boolean>(true);
@@ -38,13 +37,13 @@ export class ModalComponent {
     }
   });
 
-  constructor() {
-    effect(() => {
-      if (this.isOpen()) {
-        this.opened.emit();
-      }
-    });
-  }
+  // constructor() {
+  //   effect(() => {
+  //     if (this.isOpen()) {
+  //       this.opened.emit();
+  //     }
+  //   });
+  // }
 
   close() {
     this.closed.emit();

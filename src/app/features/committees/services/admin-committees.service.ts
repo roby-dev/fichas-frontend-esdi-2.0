@@ -13,13 +13,14 @@ import { AssignCommitteeRequest } from '../interfaces/assign-committee-request.i
 export class AdminCommitteesService {
   private readonly http = inject(HttpClient);
   private readonly baseUrl = `${environment.apiUrl}/api/v1/committees`;
+  private readonly baseUrlCommittee = `${environment.apiUrl}/api/v1/management-committees`;
 
   createCommittee(request: CreateCommitteeRequest): Observable<AdminCommittee> {
     return this.http.post<AdminCommittee>(`${this.baseUrl}`, request);
   }
 
   createCommitteeForUser(request: AssignCommitteeRequest): Observable<AdminCommittee> {
-    return this.http.post<AdminCommittee>(`${this.baseUrl}`, request);
+    return this.http.post<AdminCommittee>(`${this.baseUrlCommittee}/for-user`, request);
   }
 
   updateCommittee(id: string, request: CreateCommitteeRequest): Observable<AdminCommittee> {

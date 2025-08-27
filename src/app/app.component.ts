@@ -1,10 +1,11 @@
 import { CommonModule } from '@angular/common';
 import { Component, signal } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
+import { SnackbarComponent } from "./features/shared/components/snackbar/snackbar.component";
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet, CommonModule],
+  imports: [RouterOutlet, CommonModule, SnackbarComponent],
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css'],
 })

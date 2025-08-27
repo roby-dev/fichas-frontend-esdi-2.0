@@ -10,7 +10,8 @@ import { switchMap } from 'rxjs';
 import { ButtonComponent } from '@/features/shared/components/button/button.component';
 import { ModalComponent } from '@/features/shared/components/modal/modal.component';
 import { AssignCommitteeRequest } from '@/features/committees/interfaces/assign-committee-request.interface';
-import { AssignCommitteeFormComponent } from "../assign-committee/assign-committee-form.component";
+import { AssignCommitteeFormComponent } from '../assign-committee/assign-committee-form.component';
+import { UserState } from '@/features/users/states/user.state';
 
 @Component({
   standalone: true,
@@ -22,6 +23,7 @@ import { AssignCommitteeFormComponent } from "../assign-committee/assign-committ
 export class AdminCommitteesComponent {
   private readonly adminComitteesService = inject(AdminCommitteesService);
   readonly committeeState = inject(CommitteeState);
+  readonly userState = inject(UserState);
   readonly adminCommitteeState = inject(AdminCommitteeState);
 
   isCreateUpdateModalOpen = signal(false);
@@ -70,7 +72,20 @@ export class AdminCommitteesComponent {
     });
   }
 
-  onAssignSaved(comittee: AssignCommitteeRequest) {
-     this.isLoading.set(true);
+  onAssignSaved(assignCommittee: AssignCommitteeRequest) {
+    this.isLoading.set(true);
+
+    const request$ = this.adminComitteesService.createCommitteeForUser(assignCommittee);
+
+    request$.pipe(switchMap(() => this.committeeState.loadAllCommittes())).subscribe({
+      next: () => {
+        this.isLoading.set(false);
+        this.closeAssignModal();
+      },
+      error: (err) => {
+        this.isLoading.set(false);
+        console.error(err);
+      },
+    });
   }
 }

@@ -1,0 +1,42 @@
+<div class="pointer-events-none fixed inset-0 z-[9999] px-4 py-6 sm:p-6 m-2">
+  @for (pos of positions; track $index) {
+  <div class="absolute w-full" [ngClass]="positionClasses[pos]">
+    <div class="flex flex-col gap-2 w-full sm:items-center
+    d">
+      @for (snackbar of snackbarsByPosition(pos)(); track $index) {
+      <div
+        role="status"
+        class="pointer-events-auto flex items-center gap-3 w-full sm:max-w-3xl bg-white/95 dark:bg-slate-800/95 rounded-md shadow-lg ring-1 ring-black/5 px-4 py-2 transform transition ease-out duration-200"
+        [ngClass]="typeClasses[snackbar.type]"
+      >
+        <div class="flex-1 text-sm text-slate-900 dark:text-slate-100 break-words">
+          @if (snackbar.type) {
+          <div class="font-medium">{{ capitalize(snackbar.type) }}</div>
+          <div>{{ snackbar.message }}</div>
+          }
+        </div>
+
+        @if (snackbar.actionText) {
+        <button (click)="action(snackbar)" class="text-sm font-semibold text-sky-600 px-3 py-1 rounded hover:bg-sky-50">
+          {{ snackbar.actionText }}
+        </button>
+        } @if (snackbar.closable) {
+        <button (click)="close(snackbar.id)" class="ml-2 p-1 text-gray-500 hover:text-gray-700">
+          <span class="sr-only">Cerrar</span>
+          <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none">
+            <path
+              d="M6 18L18 6M6 6l12 12"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+          </svg>
+        </button>
+        }
+      </div>
+      }
+    </div>
+  </div>
+  }
+</div>

@@ -13,6 +13,7 @@ import { authTokenInterceptor } from './core/interceptors/auth-token.interceptor
 import { refreshTokenInterceptor } from './core/interceptors/refresh-token.interceptor';
 import { provideServiceWorker } from '@angular/service-worker';
 import { SocketIoConfig, SocketIoModule } from 'ngx-socket-io';
+import { errorInterceptor } from './core/interceptors/error.interceptor';
 
 const config: SocketIoConfig = {
   url: 'ws://localhost:3000',
@@ -23,7 +24,7 @@ export const appConfig: ApplicationConfig = {
   providers: [
     provideExperimentalZonelessChangeDetection(),
     provideRouter(routes),
-    provideHttpClient(withInterceptors([authTokenInterceptor, refreshTokenInterceptor])),
+    provideHttpClient(withInterceptors([authTokenInterceptor, refreshTokenInterceptor, errorInterceptor])),
     { provide: LOCALE_ID, useValue: 'es-ES' },
     provideServiceWorker('ngsw-worker.js', {
       enabled: !isDevMode(),

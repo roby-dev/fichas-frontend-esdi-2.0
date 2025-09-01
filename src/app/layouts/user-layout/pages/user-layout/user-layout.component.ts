@@ -1,30 +1,29 @@
-import { CommunityHallState } from '@/features/community-halls/states/community-hall.state.ts';
-import { ChangeDetectionStrategy, Component, inject, OnDestroy, OnInit, signal } from '@angular/core';
-import { Router, RouterOutlet } from '@angular/router';
-import { CommonModule } from '@angular/common';
-import { SidebarComponent } from '@/layouts/shared/sidebar/sidebar.component';
-import { CommitteeState } from '../../../../features/committees/states/committee.state';
-import { COMMITTEE_ID_KEY, COMMITTEE_NAME_KEY } from '@/core/constants/constants';
-import { catchError, EMPTY, finalize, forkJoin, Observable, switchMap, tap, throwError } from 'rxjs';
+import { COMMITTEE_ID_KEY } from '@/core/constants/constants';
+import { AuthService } from '@/core/services/auth.service';
+import { WebsocketService } from '@/core/services/socket.service';
 import { ChildrenState } from '@/features/children/states/children.state';
 import { CommitteesService } from '@/features/committees/services/committees.service';
-import { LoadingComponent } from '@/features/shared/components/loading/loading.component';
-import { AuthService } from '@/core/services/auth.service';
-import { UserState } from '@/features/users/states/user.state';
-import { WebsocketService } from '@/core/services/socket.service';
 import { AdminCommitteeState } from '@/features/committees/states/admin-committee.state';
-import { HeaderComponent } from '@/layouts/shared/header/header.component';
-import { MenuItem } from '@/layouts/shared/interfaces/menu-item.interface';
+import { CommitteeState } from '@/features/committees/states/committee.state';
+import { CommunityHallState } from '@/features/community-halls/states/community-hall.state.ts';
+import { UserState } from '@/features/users/states/user.state';
 import { HeaderItem } from '@/layouts/shared/interfaces/header-item.interface';
+import { MenuItem } from '@/layouts/shared/interfaces/menu-item.interface';
+import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
+import { Router, RouterModule } from '@angular/router';
+import { switchMap, finalize, Observable, forkJoin, EMPTY, catchError, throwError } from 'rxjs';
+import { LoadingComponent } from "@/features/shared/components/loading/loading.component";
+import { SidebarComponent } from "@/layouts/shared/sidebar/sidebar.component";
+import { HeaderComponent } from "@/layouts/shared/header/header.component";
+import { CommonModule } from '@angular/common';
 
 @Component({
-  standalone: true,
-  selector: 'admin-layout',
-  imports: [SidebarComponent, HeaderComponent, CommonModule, RouterOutlet, LoadingComponent],
-  templateUrl: './admin-layout.component.html',
+  selector: 'app-user-layout',
+  imports: [LoadingComponent, SidebarComponent, HeaderComponent, RouterModule, CommonModule],
+  templateUrl: './user-layout.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export default class AdminLayoutComponent implements OnInit, OnDestroy {
+export default class UserLayoutComponent {
   isLoading = signal<boolean>(true);
   isSidebarCollapsed = signal<boolean>(false); // escritorio
   isMobileSidebarOpen = signal<boolean>(false); // móvil (drawer)

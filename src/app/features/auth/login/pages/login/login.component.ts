@@ -55,7 +55,11 @@ export default class LoginComponent {
       .subscribe({
         next: () => {
           this.isLoading.set(false);
-          this.router.navigate(['/dashboard']);
+          if(this.authService.isAdmin()){
+            this.router.navigate(['/admin']);
+          }else{
+            this.router.navigate(['/user'])
+          }
         },
         error: () => {
           this.isLoading.set(false);

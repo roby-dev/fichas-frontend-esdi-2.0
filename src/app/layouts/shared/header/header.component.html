@@ -70,6 +70,7 @@
       <!-- Dropdown -->
       @if (dropdownOpen()) {
       <div class="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-50 animate-fade-in">
+        @for (item of headerItems(); track $index) {
         <!-- <a
           routerLink="/profile"
           class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
@@ -78,18 +79,11 @@
           Your Profile
         </a> -->
         <a
-          routerLink="/admin/committee"
+          [routerLink]="item.route"
           class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
           (click)="closeDropdown()"
         >
-          Configurar Comité
-        </a>
-        <a
-          routerLink="/admin/community-halls"
-          class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-          (click)="closeDropdown()"
-        >
-          Configurar Locales
+          {{ item.title }}
         </a>
         <!-- <a
           routerLink="/settings"
@@ -98,6 +92,8 @@
         >
           Settings
         </a> -->
+        }
+
         <button
           (click)="logout(); closeDropdown()"
           class="w-full text-left block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 cursor-pointer"

@@ -2,12 +2,13 @@ import { ACCESS_TOKEN_KEY, COMMITTEE_ID_KEY, COMMITTEE_NAME_KEY, REFRESH_TOKEN_K
 import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, computed, inject, input, output, signal } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
-import { CommitteeState } from '../../../../features/committees/states/committee.state';
 import { UserState } from '@/features/users/states/user.state';
 import { CommunityHallState } from '@/features/community-halls/states/community-hall.state.ts';
 import { ChildrenState } from '@/features/children/states/children.state';
 import { AuthService } from '@/core/services/auth.service';
 import { AdminCommitteeState } from '@/features/committees/states/admin-committee.state';
+import { CommitteeState } from '@/features/committees/states/committee.state';
+import { HeaderItem } from '../interfaces/header-item.interface';
 
 @Component({
   standalone: true,
@@ -27,7 +28,6 @@ export class HeaderComponent {
   readonly userState = inject(UserState);
 
   role = computed(() => (this.userState.user()?.roles.includes('admin') ? 'Administrador' : 'Usuario'));
-
   userName = computed(() => this.userState.user()?.email.split('@')[0] ?? '');
 
   toggleSidebarEvent = output<void>();
@@ -36,6 +36,8 @@ export class HeaderComponent {
 
   dropdownOpen = signal(false);
 
+  headerItems = input.required<HeaderItem[]>();
+  
   toggleSidebar(): void {
     this.toggleSidebarEvent.emit();
   }

@@ -5,7 +5,6 @@ import {
   HostListener,
   inject,
   signal,
-  provideExperimentalZonelessChangeDetection,
   computed,
 } from '@angular/core';
 import { ChildCardComponent } from '../../components/child-card/child-card.component';
@@ -85,8 +84,8 @@ export default class ChildrenComponent {
       });
   }
 
-  @HostListener('window:keydown.escape', ['$event'])
-  onEscapePressed(event: KeyboardEvent) {
+  @HostListener('window:keydown.escape')
+  onEscapePressed() {
     if (this.isModalOpen()) {
       this.closeModal();
     }

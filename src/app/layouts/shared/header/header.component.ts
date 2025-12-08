@@ -1,5 +1,5 @@
 import { ACCESS_TOKEN_KEY, COMMITTEE_ID_KEY, COMMITTEE_NAME_KEY, REFRESH_TOKEN_KEY } from '@/core/constants/constants';
-import { CommonModule } from '@angular/common';
+
 import { ChangeDetectionStrategy, Component, computed, inject, input, output, signal } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { UserState } from '@/features/users/states/user.state';
@@ -13,7 +13,7 @@ import { HeaderItem } from '../interfaces/header-item.interface';
 @Component({
   standalone: true,
   selector: 'app-header',
-  imports: [CommonModule, RouterLink],
+  imports: [RouterLink],
   templateUrl: './header.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })

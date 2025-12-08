@@ -29,7 +29,7 @@ export class AuthService {
     localStorage.setItem(REFRESH_TOKEN_KEY, refresh);
   }
 
-  getDecodedToken(): { email:string, roles:string[] ,exp: number } | null {
+  getDecodedToken(): { email: string, roles: string[], exp: number } | null {
     const token = this.getToken();
     if (!token) return null;
 
@@ -41,7 +41,7 @@ export class AuthService {
       return null;
     }
   }
-  
+
   isAdmin(): boolean {
     const decoded = this.getDecodedToken();
     return decoded?.roles.includes('admin') ?? false;

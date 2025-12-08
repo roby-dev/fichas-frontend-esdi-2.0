@@ -1,7 +1,7 @@
 import {
   ApplicationConfig,
   LOCALE_ID,
-  provideExperimentalZonelessChangeDetection,
+  provideZonelessChangeDetection,
   isDevMode,
   importProvidersFrom,
 } from '@angular/core';
@@ -14,15 +14,16 @@ import { refreshTokenInterceptor } from './core/interceptors/refresh-token.inter
 import { provideServiceWorker } from '@angular/service-worker';
 import { SocketIoConfig, SocketIoModule } from 'ngx-socket-io';
 import { errorInterceptor } from './core/interceptors/error.interceptor';
+import { environment } from '../environments/environment';
 
 const config: SocketIoConfig = {
-  url: 'ws://localhost:3000',
+  url: environment.apiUrl.replace(/^http/, 'ws'),
   options: { transports: ['websocket'], upgrade: true },
 };
 
 export const appConfig: ApplicationConfig = {
   providers: [
-    provideExperimentalZonelessChangeDetection(),
+    provideZonelessChangeDetection(),
     provideRouter(routes),
     provideHttpClient(withInterceptors([authTokenInterceptor, refreshTokenInterceptor, errorInterceptor])),
     { provide: LOCALE_ID, useValue: 'es-ES' },

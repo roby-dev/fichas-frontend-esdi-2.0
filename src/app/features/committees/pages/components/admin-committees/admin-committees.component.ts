@@ -1,7 +1,7 @@
 import { AdminCommittee } from '@/features/committees/interfaces/admin-committee.interface';
 import { AdminCommitteeState } from '@/features/committees/states/admin-committee.state';
 import { CommitteeState } from '@/features/committees/states/committee.state';
-import { CommonModule } from '@angular/common';
+
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 import { CommitteeFormComponent } from '../committee-form/committee-form.component';
 import { CreateCommitteeRequest } from '@/features/committees/interfaces/create-committee-request.interface';
@@ -16,7 +16,7 @@ import { UserState } from '@/features/users/states/user.state';
 @Component({
   standalone: true,
   selector: 'app-admin-committees',
-  imports: [CommonModule, CommitteeFormComponent, ButtonComponent, ModalComponent, AssignCommitteeFormComponent],
+  imports: [CommitteeFormComponent, ButtonComponent, ModalComponent, AssignCommitteeFormComponent],
   templateUrl: './admin-committees.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })

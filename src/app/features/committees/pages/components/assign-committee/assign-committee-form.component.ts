@@ -3,13 +3,13 @@ import { AssignCommitteeRequest } from '@/features/committees/interfaces/assign-
 import { CreateCommitteeRequest } from '@/features/committees/interfaces/create-committee-request.interface';
 import { ButtonComponent } from '@/features/shared/components/button/button.component';
 import { User } from '@/features/users/interfaces/user.interface';
-import { CommonModule } from '@angular/common';
+
 import { ChangeDetectionStrategy, Component, inject, input, OnInit, output } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 
 @Component({
   selector: 'app-assign-committee-form',
-  imports: [CommonModule, ReactiveFormsModule, ButtonComponent],
+  imports: [ReactiveFormsModule, ButtonComponent],
   templateUrl: './assign-committee-form.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })

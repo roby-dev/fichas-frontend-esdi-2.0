@@ -117,7 +117,6 @@ export default class AdminLayoutComponent implements OnInit, OnDestroy {
       )
       .subscribe({
         next: () => {
-          console.log('Toda la data inicial se cargó correctamente. ✅');
           this.listenSocket();
         },
         error: (err) => {

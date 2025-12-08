@@ -1,5 +1,5 @@
 import { CreateCommitteeRequest } from '@/features/committees/interfaces/create-committee-request.interface';
-import { CommonModule } from '@angular/common';
+
 import { ChangeDetectionStrategy, Component, inject, input, output } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ButtonComponent } from "@/features/shared/components/button/button.component";
@@ -7,7 +7,7 @@ import { ButtonComponent } from "@/features/shared/components/button/button.comp
 @Component({
   standalone: true,
   selector: 'app-committee-form',
-  imports: [CommonModule, ReactiveFormsModule, ButtonComponent],
+  imports: [ReactiveFormsModule, ButtonComponent],
   templateUrl: './committee-form.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })

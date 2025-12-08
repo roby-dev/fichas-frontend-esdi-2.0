@@ -1,14 +1,14 @@
 import { CreateUpdateChildRequest } from '@/features/children/interfaces/create-update-child-request.interface';
 import { CommunityHall } from '@/features/community-halls/interfaces/community.interface';
 import { toDateInputValue } from '@/features/shared/utilts';
-import { CommonModule } from '@angular/common';
+
 import { ChangeDetectionStrategy, Component, inject, input, OnInit, output } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 
 @Component({
   standalone: true,
   selector: 'app-child-form',
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [ReactiveFormsModule],
   templateUrl: './child-form.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })

@@ -5,10 +5,12 @@
       type="text"
       formControlName="committeeId"
       class="mt-1 block w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:ring-blue-500"
-    />
-    <div *ngIf="form.get('committeeId')?.touched && form.get('committeeId')?.invalid" class="text-red-500 text-xs mt-1">
-      ID requerido
-    </div>
+      />
+    @if (form.get('committeeId')?.touched && form.get('committeeId')?.invalid) {
+      <div class="text-red-500 text-xs mt-1">
+        ID requerido
+      </div>
+    }
   </div>
 
   <div>
@@ -18,10 +20,12 @@
         type="text"
         formControlName="name"
         class="mt-1 block w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:ring-blue-500"
-      />
-      <div *ngIf="form.get('name')?.touched && form.get('name')?.invalid" class="text-red-500 text-xs mt-1">
-        Nombre requerido
-      </div>
+        />
+      @if (form.get('name')?.touched && form.get('name')?.invalid) {
+        <div class="text-red-500 text-xs mt-1">
+          Nombre requerido
+        </div>
+      }
     </div>
   </div>
 
@@ -30,6 +34,6 @@
       [label]="isLoading() ? 'Guardando...' : 'Guardar'"
       [disabled]="isLoading() || form.invalid"
       type="submit"
-    />
+      />
   </div>
 </form>

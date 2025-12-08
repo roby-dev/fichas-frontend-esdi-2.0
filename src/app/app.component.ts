@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, signal } from '@angular/core';
+import { afterNextRender, Component, signal } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { SnackbarComponent } from "./features/shared/components/snackbar/snackbar.component";
 
@@ -50,6 +50,11 @@ export class AppComponent {
   }
 
   isMobile(): boolean {
-    return /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+    const ua = navigator.userAgent;
+    const hasTouchScreen = navigator.maxTouchPoints > 0;
+    const isMobileUserAgent = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini|Mobile/i.test(
+      ua
+    );
+    return hasTouchScreen && isMobileUserAgent;
   }
 }

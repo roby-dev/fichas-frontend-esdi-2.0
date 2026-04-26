@@ -1,7 +1,7 @@
 import { CommunityHallState } from '@/features/community-halls/states/community-hall.state.ts';
 import { ChangeDetectionStrategy, Component, inject, OnDestroy, OnInit, signal } from '@angular/core';
 import { Router, RouterOutlet } from '@angular/router';
-import { CommonModule } from '@angular/common';
+import { NgClass } from '@angular/common';
 import { SidebarComponent } from '@/layouts/shared/sidebar/sidebar.component';
 import { CommitteeState } from '../../../../features/committees/states/committee.state';
 import { COMMITTEE_ID_KEY, COMMITTEE_NAME_KEY } from '@/core/constants/constants';
@@ -20,7 +20,7 @@ import { HeaderItem } from '@/layouts/shared/interfaces/header-item.interface';
 @Component({
   standalone: true,
   selector: 'admin-layout',
-  imports: [SidebarComponent, HeaderComponent, CommonModule, RouterOutlet, LoadingComponent],
+  imports: [SidebarComponent, HeaderComponent, NgClass, RouterOutlet, LoadingComponent],
   templateUrl: './admin-layout.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })

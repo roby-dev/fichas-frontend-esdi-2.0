@@ -10,16 +10,16 @@ import { UserState } from '@/features/users/states/user.state';
 import { HeaderItem } from '@/layouts/shared/interfaces/header-item.interface';
 import { MenuItem } from '@/layouts/shared/interfaces/menu-item.interface';
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
-import { Router, RouterModule } from '@angular/router';
+import { Router, RouterOutlet } from '@angular/router';
 import { switchMap, finalize, Observable, forkJoin, EMPTY, catchError, throwError } from 'rxjs';
 import { LoadingComponent } from "@/features/shared/components/loading/loading.component";
 import { SidebarComponent } from "@/layouts/shared/sidebar/sidebar.component";
 import { HeaderComponent } from "@/layouts/shared/header/header.component";
-import { CommonModule } from '@angular/common';
+import { NgClass } from '@angular/common';
 
 @Component({
   selector: 'app-user-layout',
-  imports: [LoadingComponent, SidebarComponent, HeaderComponent, RouterModule, CommonModule],
+  imports: [LoadingComponent, SidebarComponent, HeaderComponent, RouterOutlet, NgClass],
   templateUrl: './user-layout.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })

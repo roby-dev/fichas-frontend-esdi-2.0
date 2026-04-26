@@ -1,12 +1,12 @@
 import { UserState } from '@/features/users/states/user.state';
-import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, Component, computed, inject, input, output, signal } from '@angular/core';
-import { RouterLink, RouterModule } from '@angular/router';
+import { NgClass } from '@angular/common';
+import { ChangeDetectionStrategy, Component, computed, inject, input, output } from '@angular/core';
+import { RouterLink, RouterLinkActive } from '@angular/router';
 import { MenuItem } from '../interfaces/menu-item.interface';
 
 @Component({
   selector: 'app-sidebar',
-  imports: [CommonModule, RouterLink, RouterModule],
+  imports: [NgClass, RouterLink, RouterLinkActive],
   templateUrl: './sidebar.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })

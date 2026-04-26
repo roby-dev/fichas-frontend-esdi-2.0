@@ -1,11 +1,10 @@
-import { CommonModule } from '@angular/common';
-import { afterNextRender, Component, signal } from '@angular/core';
+import { Component, signal } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { SnackbarComponent } from "./features/shared/components/snackbar/snackbar.component";
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet, CommonModule, SnackbarComponent],
+  imports: [RouterOutlet, SnackbarComponent],
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css'],
 })

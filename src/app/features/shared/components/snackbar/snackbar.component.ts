@@ -1,11 +1,11 @@
 import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
+import { NgClass } from '@angular/common';
 import { Snackbar } from './snackbar.model';
 import { SnackbarService } from './snackbar.service';
-import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-snackbar',
-  imports: [CommonModule],
+  imports: [NgClass],
   templateUrl: './snackbar.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })

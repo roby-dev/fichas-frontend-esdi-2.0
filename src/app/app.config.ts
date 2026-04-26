@@ -16,8 +16,8 @@ import { SocketIoConfig, SocketIoModule } from 'ngx-socket-io';
 import { errorInterceptor } from './core/interceptors/error.interceptor';
 import { environment } from '../environments/environment';
 
-const config: SocketIoConfig = {
-  url: environment.apiUrl.replace(/^http/, 'ws'),
+const wsConfig: SocketIoConfig = {
+  url: environment.wsUrl,
   options: { transports: ['websocket'], upgrade: true },
 };
 
@@ -31,10 +31,6 @@ export const appConfig: ApplicationConfig = {
       enabled: !isDevMode(),
       registrationStrategy: 'registerWhenStable:30000',
     }),
-    provideServiceWorker('ngsw-worker.js', {
-      enabled: !isDevMode(),
-      registrationStrategy: 'registerWhenStable:30000',
-    }),
-    importProvidersFrom(SocketIoModule.forRoot(config)),
+    importProvidersFrom(SocketIoModule.forRoot(wsConfig)),
   ],
 };

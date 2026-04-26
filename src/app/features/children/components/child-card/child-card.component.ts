@@ -1,10 +1,10 @@
 import { ChangeDetectionStrategy, Component, input } from '@angular/core';
 import { Child } from '../../interfaces/child.interface';
-import { CommonModule, DatePipe } from '@angular/common';
+import { DatePipe, NgClass } from '@angular/common';
 
 @Component({
   selector: 'app-child-card',
-  imports: [DatePipe, CommonModule],
+  imports: [DatePipe, NgClass],
   templateUrl: './child-card.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })

@@ -1,44 +1,28 @@
 <div>
   <h2 class="text-2xl font-bold text-gray-900 mb-6">Ingresa</h2>
 
-  <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+  <form (submit)="onSubmit($event)">
     <!-- Email Input -->
     <div class="mb-4">
-      <label for="email" class="block text-sm font-medium text-gray-700 mb-1">Correo electrónico</label>
-      <input id="email" type="email" formControlName="email"
-        class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-        [ngClass]="{ 'border-red-500': emailControl?.invalid && emailControl?.touched }" />
-      @if(emailControl?.invalid && emailControl?.touched) {
-      <div class="mt-1 text-xs text-red-500">
-        @if(emailControl?.errors?.['required']) {
-        <span>Correo electrónico es obligatorio</span>
-        } @if(emailControl?.errors?.['email']) {
-        <span>Ingrese un correo electrónico válido</span>
-        }
-      </div>
-      }
+      <app-input
+        id="email"
+        type="email"
+        label="Correo electrónico"
+        [control]="emailControl"
+      ></app-input>
     </div>
 
     <div class="mb-6">
-      <div class="flex items-center justify-between mb-1">
-        <label for="password" class="block text-sm font-medium text-gray-700">Contraseña</label>
-      </div>
-      <input id="password" type="password" formControlName="password"
-        class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-        [ngClass]="{ 'border-red-500': passwordControl?.invalid && passwordControl?.touched }" />
-      @if(passwordControl?.invalid && passwordControl?.touched) {
-      <div class="mt-1 text-xs text-red-500">
-        @if(passwordControl?.errors?.['required']) {
-        <span>La contraseña es obligatoria</span>
-        } @if(passwordControl?.errors?.['minlength']) {
-        <span>La contraseña debe de tener un mínimo de 6 dígitos</span>
-        }
-      </div>
-      }
+      <app-input
+        id="password"
+        type="password"
+        label="Contraseña"
+        [control]="passwordControl"
+      ></app-input>
     </div>
 
     <!-- Submit Button -->
-    <button type="submit" [disabled]="loginForm.invalid || isLoading()"
+    <button type="submit" [disabled]="loginForm().invalid() || isLoading()"
       class="w-full py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50">
       @if(!isLoading()) {
       <span> Ingresar</span>
@@ -64,3 +48,6 @@
     <a routerLink="/auth/register" class="text-sm font-medium text-blue-600 hover:text-blue-500">Regístrate aqui</a>
   </div>
 </div>
+
+
+

@@ -15,4 +15,13 @@ export class AuthorizationService {
   login(request: LoginRequest): Observable<LoginResponse> {
     return this.http.post<LoginResponse>(`${this.baseUrl}/login`, request);
   }
+
+  refreshToken(refreshToken: string): Observable<LoginResponse> {
+    return this.http.post<LoginResponse>(`${this.baseUrl}/refresh`, { refreshToken });
+  }
+
+  logout(): Observable<void> {
+    return this.http.get<void>(`${this.baseUrl}/logout`);
+  }
 }
+

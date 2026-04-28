@@ -8,7 +8,7 @@ import {
 import { provideRouter } from '@angular/router';
 
 import { routes } from './app.routes';
-import { provideHttpClient, withInterceptors } from '@angular/common/http';
+import { provideHttpClient, withFetch, withInterceptors } from '@angular/common/http';
 import { authTokenInterceptor } from './core/interceptors/auth-token.interceptor';
 import { refreshTokenInterceptor } from './core/interceptors/refresh-token.interceptor';
 import { provideServiceWorker } from '@angular/service-worker';
@@ -25,7 +25,7 @@ export const appConfig: ApplicationConfig = {
   providers: [
     provideZonelessChangeDetection(),
     provideRouter(routes),
-    provideHttpClient(withInterceptors([authTokenInterceptor, refreshTokenInterceptor, errorInterceptor])),
+    provideHttpClient(withFetch(), withInterceptors([authTokenInterceptor, refreshTokenInterceptor, errorInterceptor])),
     { provide: LOCALE_ID, useValue: 'es-ES' },
     provideServiceWorker('ngsw-worker.js', {
       enabled: !isDevMode(),

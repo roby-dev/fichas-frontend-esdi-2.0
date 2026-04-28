@@ -12,10 +12,15 @@ export class ButtonComponent {
   label = input.required<string>();
   outline = input<boolean>(false);
   disabled = input<boolean>(false);
+  isLoading = input<boolean>(false);
   type = input<'button' | 'submit' | 'reset'>('button');
 
   classes = computed(() => {
     return [
+      'flex',
+      'items-center',
+      'justify-center',
+      'gap-2',
       'cursor-pointer',
       'rounded-lg',
       'border-1',
@@ -24,6 +29,7 @@ export class ButtonComponent {
       'text-sm',
       'font-medium',
       'disabled:opacity-50',
+      'disabled:cursor-not-allowed',
       'transition-all duration-[150ms]',
       this.outline()
         ? 'bg-white text-blue-500 border-blue-500 hover:brightness-90'
@@ -32,8 +38,9 @@ export class ButtonComponent {
   });
 
   callAction() {
-    if (this.action) {
+    if (this.action && !this.isLoading() && !this.disabled()) {
       this.action.emit();
     }
   }
 }
+

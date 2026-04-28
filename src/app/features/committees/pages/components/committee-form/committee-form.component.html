@@ -1,39 +1,27 @@
-<form [formGroup]="form" (ngSubmit)="onSubmit()" class="space-y-4 p-4">
+<form (submit)="onSubmit($event)" class="space-y-4 p-4">
   <div>
-    <label class="block text-sm font-medium text-gray-700">ID Comité</label>
-    <input
+    <app-input
       type="text"
-      formControlName="committeeId"
-      class="mt-1 block w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:ring-blue-500"
-      />
-    @if (form.get('committeeId')?.touched && form.get('committeeId')?.invalid) {
-      <div class="text-red-500 text-xs mt-1">
-        ID requerido
-      </div>
-    }
+      label="ID Comité"
+      [control]="committeeIdControl"
+    ></app-input>
   </div>
 
   <div>
-    <div>
-      <label class="block text-sm font-medium text-gray-700">Nombre Comité</label>
-      <input
-        type="text"
-        formControlName="name"
-        class="mt-1 block w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:ring-blue-500"
-        />
-      @if (form.get('name')?.touched && form.get('name')?.invalid) {
-        <div class="text-red-500 text-xs mt-1">
-          Nombre requerido
-        </div>
-      }
-    </div>
+    <app-input
+      type="text"
+      label="Nombre Comité"
+      [control]="nameControl"
+    ></app-input>
   </div>
 
-  <div class="flex justify-end">
+  <div class="flex justify-end pt-2">
     <app-button
       [label]="isLoading() ? 'Guardando...' : 'Guardar'"
-      [disabled]="isLoading() || form.invalid"
+      [disabled]="isLoading() || form().invalid()"
       type="submit"
-      />
+    ></app-button>
   </div>
 </form>
+
+

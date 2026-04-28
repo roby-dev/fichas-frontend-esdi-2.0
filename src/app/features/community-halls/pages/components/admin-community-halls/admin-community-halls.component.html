@@ -1,0 +1,45 @@
+<h2 class="text-lg font-semibold mb-4">Administración de locales comunales</h2>
+
+<div class="flex flex-col sm:flex-row sm:justify-between sm:items-center items-start mb-4 gap-2 sm:gap-0">
+  <h3 class="text-base font-semibold">Locales registrados</h3>
+  <div class="flex flex-row gap-2 self-end">
+    <app-button (action)="openCreateModal()" [label]="'Crear'" />
+  </div>
+</div>
+
+<div class="overflow-x-auto">
+  <table class="min-w-full divide-y divide-gray-200 border rounded-lg">
+    <thead class="bg-gray-50">
+      <tr>
+        <th class="px-4 py-2 text-center text-sm font-medium text-gray-600 w-[80px]">ID Local</th>
+        <th class="px-4 py-2 text-left text-sm font-medium text-gray-600">Nombre</th>
+        <th class="px-4 py-2 text-left text-sm font-medium text-gray-600">Comité</th>
+      </tr>
+    </thead>
+    <tbody class="divide-y divide-gray-100">
+      @for(hall of adminCommunityHallState.communityHalls(); track hall.id){
+      <tr class="hover:bg-gray-50 transition-colors">
+        <td class="px-4 py-2 text-sm text-gray-800">{{ hall.localId }}</td>
+        <td class="px-4 py-2 text-sm text-gray-800">{{ hall.name }}</td>
+        <td class="px-4 py-2 text-sm text-gray-800">
+          {{ hall.managementCommittee?.committeeId }} - {{ hall.managementCommittee?.name }}
+        </td>
+      </tr>
+      }@empty {
+      <tr>
+        <td colspan="3" class="px-4 py-2 text-sm text-gray-800">No hay locales registrados</td>
+      </tr>
+      }
+    </tbody>
+  </table>
+</div>
+
+@if(isCreateModalOpen()){
+<app-modal [title]="'Agregar local comunal'" size="lg" (closed)="closeCreateModal()">
+  <app-community-hall-form
+    [committees]="committeeState.adminCommittees()"
+    (saveCommunityHallEvent)="onCommunityHallSaved($event)"
+    [isLoading]="isLoading()"
+  />
+</app-modal>
+}

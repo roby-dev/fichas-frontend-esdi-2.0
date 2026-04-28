@@ -13,6 +13,7 @@ import { AuthService } from '@/core/services/auth.service';
 import { UserState } from '@/features/users/states/user.state';
 import { WebsocketService } from '@/core/services/socket.service';
 import { AdminCommitteeState } from '@/features/committees/states/admin-committee.state';
+import { AdminCommunityHallState } from '@/features/community-halls/states/admin-community-hall.state';
 import { HeaderComponent } from '@/layouts/shared/header/header.component';
 import { MenuItem } from '@/layouts/shared/interfaces/menu-item.interface';
 import { HeaderItem } from '@/layouts/shared/interfaces/header-item.interface';
@@ -39,6 +40,7 @@ export default class AdminLayoutComponent implements OnInit, OnDestroy {
   readonly committeeState = inject(CommitteeState);
   readonly userState = inject(UserState);
   readonly adminCommitteeState = inject(AdminCommitteeState);
+  readonly adminCommunityHallState = inject(AdminCommunityHallState);
 
   menuItems = signal<MenuItem[]>([
     {
@@ -132,6 +134,7 @@ export default class AdminLayoutComponent implements OnInit, OnDestroy {
         this.committeeState.loadAllCommittes(),
         this.adminCommitteeState.loadCommitteees(),
         this.userState.loadUsers(),
+        this.adminCommunityHallState.loadCommunityHalls(),
       ]);
     } else {
       return this.committeeState.loadCommittesByUser();

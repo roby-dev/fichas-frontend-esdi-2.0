@@ -12,6 +12,10 @@ export class CommunityHallsService {
   private readonly http = inject(HttpClient);
   private readonly baseUrl = `${environment.apiUrl}/api/v1/community-halls`;
 
+  getCommunityHalls(): Observable<CommunityHall[]> {
+    return this.http.get<CommunityHall[]>(this.baseUrl);
+  }
+
   getCommunityHallsByCommitteeId(id: string): Observable<CommunityHall[]> {
     return this.http.get<CommunityHall[]>(`${this.baseUrl}/by-committee/${id}`);
   }

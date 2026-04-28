@@ -4,6 +4,7 @@ import { environment } from 'src/environments/environment';
 import { CreateUpdateChildRequest } from '../interfaces/create-update-child-request.interface';
 import { Observable } from 'rxjs';
 import { Child } from '../interfaces/child.interface';
+import { UserWithChildren } from '../interfaces/user-with-children.interface';
 
 @Injectable({
   providedIn: 'root',
@@ -20,8 +21,20 @@ export class ChildrenService {
     return this.http.get<Child[]>(`${this.baseUrl}?limit=${limit}&offset=${offset}`);
   }
 
+  getChildrenByUser(): Observable<Child[]> {
+    return this.http.get<Child[]>(`${this.baseUrl}/by-user`);
+  }
+
+  getChildrenGroupedByUser(): Observable<UserWithChildren[]> {
+    return this.http.get<UserWithChildren[]>(`${this.baseUrl}/grouped-by-user`);
+  }
+
   getChildrenByCommittee(id: string): Observable<Child[]> {
     return this.http.get<Child[]>(`${this.baseUrl}/by-committee/${id}`);
+  }
+
+  getChildById(id: string): Observable<Child> {
+    return this.http.get<Child>(`${this.baseUrl}/${id}`);
   }
 
   updateChild(id: string, request: CreateUpdateChildRequest): Observable<Child> {
@@ -32,3 +45,4 @@ export class ChildrenService {
     return this.http.delete<void>(`${this.baseUrl}/${id}`);
   }
 }
+

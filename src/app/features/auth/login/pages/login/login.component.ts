@@ -1,39 +1,44 @@
-import { NgClass } from '@angular/common';
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
-import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { AuthService } from '@/core/services/auth.service';
 import { AuthorizationService } from '@/features/auth/services/authorization.service';
 import { catchError, of, tap } from 'rxjs';
+import { InputComponent } from '@/features/shared/components/input/input.component';
+import { form, required, email, minLength } from '@angular/forms/signals';
 
 @Component({
   standalone: true,
   selector: 'login',
-  imports: [NgClass, ReactiveFormsModule, RouterLink],
+  imports: [RouterLink, InputComponent],
   templateUrl: './login.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export default class LoginComponent {
   private readonly authService = inject(AuthService);
   private readonly router = inject(Router);
-  private readonly fb = inject(FormBuilder);
   private readonly authorizationService = inject(AuthorizationService);
 
-  loginForm: FormGroup;
+  loginModel = signal({
+    email: '',
+    password: '',
+  });
+
+  loginForm = form(this.loginModel, (schemaPath) => {
+    required(schemaPath.email, { message: 'Correo electrónico es obligatorio' });
+    email(schemaPath.email, { message: 'Ingrese un correo electrónico válido' });
+
+    required(schemaPath.password, { message: 'La contraseña es obligatoria' });
+    minLength(schemaPath.password, 6, { message: 'La contraseña debe de tener un mínimo de 6 dígitos' });
+  });
+
   isLoading = signal<boolean>(false);
   error = signal<string>('');
 
-  constructor() {
-    this.loginForm = this.fb.group({
-      email: ['', [Validators.required, Validators.email]],
-      password: ['', [Validators.required, Validators.minLength(6)]],
-    });
-  }
-
   ngOnInit(): void {}
 
-  onSubmit(): void {
-    if (this.loginForm.invalid) {
+  onSubmit(event: Event): void {
+    event.preventDefault();
+    if (this.loginForm().invalid()) {
       return;
     }
 
@@ -41,7 +46,7 @@ export default class LoginComponent {
     this.error.set('');
 
     this.authorizationService
-      .login(this.loginForm.value)
+      .login(this.loginModel())
       .pipe(
         tap((res) => {
           this.authService.setTokens(res.accessToken, res.refreshToken);
@@ -55,10 +60,10 @@ export default class LoginComponent {
       .subscribe({
         next: () => {
           this.isLoading.set(false);
-          if(this.authService.isAdmin()){
+          if (this.authService.isAdmin()) {
             this.router.navigate(['/admin']);
-          }else{
-            this.router.navigate(['/user'])
+          } else {
+            this.router.navigate(['/user']);
           }
         },
         error: () => {
@@ -68,9 +73,12 @@ export default class LoginComponent {
   }
 
   get emailControl() {
-    return this.loginForm.get('email');
+    return this.loginForm.email;
   }
   get passwordControl() {
-    return this.loginForm.get('password');
+    return this.loginForm.password;
   }
 }
+
+
+

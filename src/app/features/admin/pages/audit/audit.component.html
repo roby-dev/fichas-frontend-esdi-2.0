@@ -1,0 +1,111 @@
+<div class="p-0 sm:p-4">
+  <div class="flex items-center justify-between mb-4">
+    <h2 class="text-lg font-semibold">Auditoría</h2>
+    <button
+      (click)="toggleFilters()"
+      class="text-sm text-blue-500 hover:text-blue-700 transition-colors flex items-center gap-1">
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+          d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z">
+        </path>
+      </svg>
+      {{ showFilters() ? 'Ocultar filtros' : 'Mostrar filtros' }}
+    </button>
+  </div>
+
+  <div class="flex flex-col gap-4">
+    <!-- Filtros colapsables -->
+    @if (showFilters()) {
+      <app-audit-filters [filters]="filters()" (filtersChange)="onFiltersChange($event)" />
+    }
+
+    <!-- Info de resultados -->
+    <div class="flex items-center justify-between">
+      <span class="text-sm text-gray-600">
+        Total de eventos:
+        <span class="font-bold text-white bg-blue-500 py-1 px-2 rounded">
+          {{ total() }}
+        </span>
+      </span>
+      @if (isLoading()) {
+        <span class="text-sm text-gray-400 animate-pulse">Cargando...</span>
+      }
+    </div>
+
+    <!-- Tabla de eventos -->
+    <div class="overflow-x-auto bg-white shadow-sm rounded">
+      <table class="min-w-full divide-y divide-gray-200">
+        <thead class="bg-gray-50">
+          <tr>
+            <th class="px-4 py-2 text-left text-sm font-medium text-gray-600">Fecha</th>
+            <th class="px-4 py-2 text-left text-sm font-medium text-gray-600">Acción</th>
+            <th class="px-4 py-2 text-left text-sm font-medium text-gray-600">Entidad</th>
+            <th class="px-4 py-2 text-left text-sm font-medium text-gray-600 hidden lg:table-cell">Actor</th>
+            <th class="px-4 py-2 text-center text-sm font-medium text-gray-600">Cambios</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-gray-100">
+          @for (event of events(); track event.id) {
+            <tr
+              class="hover:bg-gray-50 transition-colors cursor-pointer"
+              (click)="onSelectEvent(event)">
+              <td class="px-4 py-2 text-sm text-gray-800 whitespace-nowrap">
+                {{ event.occurredAt | date: 'dd/MM/yy HH:mm' }}
+              </td>
+              <td class="px-4 py-2 text-sm">
+                <span class="bg-indigo-100 text-indigo-800 text-xs font-medium px-2 py-0.5 rounded">
+                  {{ event.action }}
+                </span>
+              </td>
+              <td class="px-4 py-2 text-sm text-gray-800">
+                {{ event.entityType }}
+              </td>
+              <td class="px-4 py-2 text-sm text-gray-500 font-mono text-xs hidden lg:table-cell">
+                {{ event.actorUserId }}
+              </td>
+              <td class="px-4 py-2 text-sm text-center">
+                <span class="bg-amber-100 text-amber-800 text-xs font-medium px-2 py-0.5 rounded">
+                  {{ event.changedFields.length }}
+                </span>
+              </td>
+            </tr>
+          } @empty {
+            <tr>
+              <td colspan="5" class="px-4 py-8 text-sm text-center text-gray-500">
+                No se encontraron eventos de auditoría.
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Paginación -->
+    @if (totalPages > 1) {
+      <div class="flex items-center justify-between">
+        <span class="text-sm text-gray-600">
+          Página {{ currentPage }} de {{ totalPages }}
+        </span>
+        <div class="flex gap-2">
+          <button
+            (click)="prevPage()"
+            [disabled]="currentPage <= 1"
+            class="px-3 py-1 text-sm rounded border border-gray-300 hover:bg-gray-50 transition-colors disabled:opacity-40 disabled:cursor-not-allowed">
+            Anterior
+          </button>
+          <button
+            (click)="nextPage()"
+            [disabled]="currentPage >= totalPages"
+            class="px-3 py-1 text-sm rounded border border-gray-300 hover:bg-gray-50 transition-colors disabled:opacity-40 disabled:cursor-not-allowed">
+            Siguiente
+          </button>
+        </div>
+      </div>
+    }
+  </div>
+</div>
+
+<!-- Modal de detalle -->
+@if (selectedEvent()) {
+  <app-audit-detail-modal [event]="selectedEvent()!" (close)="closeDetail()" />
+}

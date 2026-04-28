@@ -25,6 +25,10 @@ export const ADMIN_ROUTES: Routes = [
     loadComponent: () => import('@/features/unauthorized/pages/unauthorized/unauthorized.component'),
   },
   {
+    path: 'audit',
+    loadComponent: () => import('@/features/admin/pages/audit/audit.component'),
+  },
+  {
     path: '',
     redirectTo: 'dashboard',
     pathMatch: 'full',

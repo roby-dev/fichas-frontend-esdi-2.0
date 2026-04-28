@@ -1,0 +1,113 @@
+<!-- Backdrop -->
+<div class="fixed inset-0 z-50 flex items-center justify-center" role="dialog" aria-modal="true"
+  aria-labelledby="audit-detail-title">
+  <!-- overlay -->
+  <div class="absolute inset-0 bg-black/40" (click)="onClose()" aria-hidden="true"></div>
+
+  <!-- Modal panel -->
+  <div class="relative z-10 w-full max-w-2xl mx-4 md:mx-0 bg-white rounded-lg shadow-lg overflow-hidden max-h-[85vh] flex flex-col">
+    <!-- Header -->
+    <div class="flex items-center justify-between px-4 py-3 border-b shrink-0">
+      <h3 id="audit-detail-title" class="text-lg font-medium text-gray-900">
+        Detalle del evento
+      </h3>
+      <button (click)="onClose()" class="text-gray-500 hover:text-gray-700">
+        <span class="sr-only">Cerrar</span>
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+        </svg>
+      </button>
+    </div>
+
+    <!-- Body -->
+    <div class="p-4 overflow-y-auto">
+      <!-- Metadata del evento -->
+      <div class="grid grid-cols-2 gap-3 mb-4 text-sm">
+        <div>
+          <span class="text-gray-500">Acción:</span>
+          <span class="ml-1 font-medium text-gray-800">{{ event().action }}</span>
+        </div>
+        <div>
+          <span class="text-gray-500">Entidad:</span>
+          <span class="ml-1 font-medium text-gray-800">{{ event().entityType }}</span>
+        </div>
+        <div>
+          <span class="text-gray-500">Entity ID:</span>
+          <span class="ml-1 font-mono text-xs text-gray-600">{{ event().entityId }}</span>
+        </div>
+        <div>
+          <span class="text-gray-500">Actor:</span>
+          <span class="ml-1 font-mono text-xs text-gray-600">{{ event().actorUserId }}</span>
+        </div>
+        <div>
+          <span class="text-gray-500">Fecha:</span>
+          <span class="ml-1 text-gray-800">{{ event().occurredAt | date: 'dd/MM/yyyy HH:mm:ss' }}</span>
+        </div>
+        @if (event().ipAddress) {
+        <div>
+          <span class="text-gray-500">IP:</span>
+          <span class="ml-1 font-mono text-xs text-gray-600">{{ event().ipAddress }}</span>
+        </div>
+        }
+      </div>
+
+      <!-- Tabs -->
+      <div class="border-b mb-3">
+        <nav class="flex gap-4">
+          <button
+            (click)="setTab('changes')"
+            [class]="activeTab() === 'changes'
+              ? 'border-b-2 border-blue-500 text-blue-600 pb-2 text-sm font-medium'
+              : 'text-gray-500 hover:text-gray-700 pb-2 text-sm'">
+            Campos cambiados
+          </button>
+          <button
+            (click)="setTab('before')"
+            [class]="activeTab() === 'before'
+              ? 'border-b-2 border-blue-500 text-blue-600 pb-2 text-sm font-medium'
+              : 'text-gray-500 hover:text-gray-700 pb-2 text-sm'">
+            Antes
+          </button>
+          <button
+            (click)="setTab('after')"
+            [class]="activeTab() === 'after'
+              ? 'border-b-2 border-blue-500 text-blue-600 pb-2 text-sm font-medium'
+              : 'text-gray-500 hover:text-gray-700 pb-2 text-sm'">
+            Después
+          </button>
+        </nav>
+      </div>
+
+      <!-- Tab content -->
+      @switch (activeTab()) {
+        @case ('changes') {
+          @if (event().changedFields.length > 0) {
+            <div class="flex flex-wrap gap-2">
+              @for (field of event().changedFields; track field) {
+                <span class="bg-amber-100 text-amber-800 text-xs font-medium px-2 py-1 rounded">
+                  {{ field }}
+                </span>
+              }
+            </div>
+          } @else {
+            <p class="text-sm text-gray-500 italic">No se registraron campos cambiados.</p>
+          }
+        }
+        @case ('before') {
+          @if (event().before) {
+            <pre class="bg-gray-50 rounded p-3 text-xs overflow-x-auto max-h-60">{{ event().before | json }}</pre>
+          } @else {
+            <p class="text-sm text-gray-500 italic">Sin datos previos (posiblemente una creación).</p>
+          }
+        }
+        @case ('after') {
+          @if (event().after) {
+            <pre class="bg-gray-50 rounded p-3 text-xs overflow-x-auto max-h-60">{{ event().after | json }}</pre>
+          } @else {
+            <p class="text-sm text-gray-500 italic">Sin datos posteriores (posiblemente una eliminación).</p>
+          }
+        }
+      }
+    </div>
+  </div>
+</div>

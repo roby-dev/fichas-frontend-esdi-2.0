@@ -1,0 +1,83 @@
+<div class="bg-white shadow-sm rounded p-4">
+  <div class="flex items-center justify-between mb-3">
+    <h3 class="text-sm font-medium text-gray-700">Filtros</h3>
+    <div class="flex gap-2">
+      <button
+        (click)="onClear()"
+        class="text-sm text-gray-500 hover:text-gray-700 transition-colors">
+        Limpiar
+      </button>
+      <button
+        (click)="onApply()"
+        class="bg-blue-500 text-white text-sm px-3 py-1 rounded hover:bg-blue-600 transition-all duration-200">
+        Aplicar
+      </button>
+    </div>
+  </div>
+
+  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+    <!-- Tipo de entidad -->
+    <div>
+      <label for="entityType" class="block text-xs font-medium text-gray-500 mb-1">Tipo de entidad</label>
+      <input
+        id="entityType"
+        type="text"
+        [(ngModel)]="localFilters.entityType"
+        placeholder="Ej: AlertChild"
+        class="block w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm focus:border-blue-500 focus:ring-blue-500" />
+    </div>
+
+    <!-- Acción -->
+    <div>
+      <label for="action" class="block text-xs font-medium text-gray-500 mb-1">Acción</label>
+      <input
+        id="action"
+        type="text"
+        [(ngModel)]="localFilters.action"
+        placeholder="Ej: alert-child.update"
+        class="block w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm focus:border-blue-500 focus:ring-blue-500" />
+    </div>
+
+    <!-- Actor (userId) -->
+    <div>
+      <label for="actorUserId" class="block text-xs font-medium text-gray-500 mb-1">Actor (User ID)</label>
+      <input
+        id="actorUserId"
+        type="text"
+        [(ngModel)]="localFilters.actorUserId"
+        placeholder="ObjectId del usuario"
+        class="block w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm focus:border-blue-500 focus:ring-blue-500" />
+    </div>
+
+    <!-- Desde -->
+    <div>
+      <label for="from" class="block text-xs font-medium text-gray-500 mb-1">Desde</label>
+      <input
+        id="from"
+        type="datetime-local"
+        [(ngModel)]="localFilters.from"
+        class="block w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm focus:border-blue-500 focus:ring-blue-500" />
+    </div>
+
+    <!-- Hasta -->
+    <div>
+      <label for="to" class="block text-xs font-medium text-gray-500 mb-1">Hasta</label>
+      <input
+        id="to"
+        type="datetime-local"
+        [(ngModel)]="localFilters.to"
+        class="block w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm focus:border-blue-500 focus:ring-blue-500" />
+    </div>
+
+    <!-- Entity ID -->
+    <div>
+      <label for="entityId" class="block text-xs font-medium text-gray-500 mb-1">Entity ID</label>
+      <input
+        id="entityId"
+        type="text"
+        [(ngModel)]="localFilters.entityId"
+        placeholder="ID específico de entidad"
+        class="block w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm focus:border-blue-500 focus:ring-blue-500" />
+    </div>
+  </div>
+</div>

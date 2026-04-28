@@ -1,5 +1,5 @@
 export const environment = {
   production: true,
-  apiUrl: 'https://fichas-esdi-backend.fly.dev',
-  wsUrl: 'wss://fichas-esdi-backend.fly.dev',
+  apiUrl: 'https://fichas-esdi-backend-production.up.railway.app',
+  wsUrl: 'wss://fichas-esdi-backend-production.up.railway.app',
 };

@@ -1,0 +1,8 @@
+node_modules
+.git
+.angular
+public
+.vscode
+.vscode-test
+.idea
+*.log

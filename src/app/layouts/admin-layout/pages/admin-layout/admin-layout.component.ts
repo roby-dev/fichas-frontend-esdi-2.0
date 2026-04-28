@@ -5,7 +5,7 @@ import { NgClass } from '@angular/common';
 import { SidebarComponent } from '@/layouts/shared/sidebar/sidebar.component';
 import { CommitteeState } from '../../../../features/committees/states/committee.state';
 import { COMMITTEE_ID_KEY, COMMITTEE_NAME_KEY } from '@/core/constants/constants';
-import { catchError, EMPTY, finalize, forkJoin, Observable, switchMap, tap, throwError } from 'rxjs';
+import { catchError, EMPTY, finalize, forkJoin, Observable, of, switchMap, tap, throwError } from 'rxjs';
 import { ChildrenState } from '@/features/children/states/children.state';
 import { CommitteesService } from '@/features/committees/services/committees.service';
 import { LoadingComponent } from '@/features/shared/components/loading/loading.component';
@@ -14,6 +14,7 @@ import { UserState } from '@/features/users/states/user.state';
 import { WebsocketService } from '@/core/services/socket.service';
 import { AdminCommitteeState } from '@/features/committees/states/admin-committee.state';
 import { AdminCommunityHallState } from '@/features/community-halls/states/admin-community-hall.state';
+import { AdminChildrenState } from '@/features/children/states/admin-children.state';
 import { HeaderComponent } from '@/layouts/shared/header/header.component';
 import { MenuItem } from '@/layouts/shared/interfaces/menu-item.interface';
 import { HeaderItem } from '@/layouts/shared/interfaces/header-item.interface';
@@ -41,6 +42,7 @@ export default class AdminLayoutComponent implements OnInit, OnDestroy {
   readonly userState = inject(UserState);
   readonly adminCommitteeState = inject(AdminCommitteeState);
   readonly adminCommunityHallState = inject(AdminCommunityHallState);
+  readonly adminChildrenState = inject(AdminChildrenState);
 
   menuItems = signal<MenuItem[]>([
     {
@@ -123,7 +125,9 @@ export default class AdminLayoutComponent implements OnInit, OnDestroy {
         },
         error: (err) => {
           console.error('Ocurrió un error durante la carga inicial:', err);
-          this.router.navigate(['/admin/committee']);
+          if (!this.authService.isAdmin()) {
+            this.router.navigate(['/admin/committee']);
+          }
         },
       });
   }
@@ -135,6 +139,7 @@ export default class AdminLayoutComponent implements OnInit, OnDestroy {
         this.adminCommitteeState.loadCommitteees(),
         this.userState.loadUsers(),
         this.adminCommunityHallState.loadCommunityHalls(),
+        this.adminChildrenState.loadGroupedByUser(),
       ]);
     } else {
       return this.committeeState.loadCommittesByUser();
@@ -143,8 +148,12 @@ export default class AdminLayoutComponent implements OnInit, OnDestroy {
 
   private loadCommitteeDetailsFromStorage(): Observable<any> {
     const committeeId = localStorage.getItem(COMMITTEE_ID_KEY);
+    const isAdmin = this.authService.isAdmin();
 
     if (!committeeId) {
+      if (isAdmin) {
+        return of(null);
+      }
       this.router.navigate(['/admin/committee']);
       return EMPTY;
     }
@@ -155,6 +164,9 @@ export default class AdminLayoutComponent implements OnInit, OnDestroy {
         return forkJoin([this.communityHallState.loadCommunityHalls(), this.childrenState.loadChildren()]);
       }),
       catchError((error) => {
+        if (isAdmin) {
+          return of(null);
+        }
         this.router.navigate(['/admin/committee']);
         return throwError(() => new Error('Error al cargar el comité por ID'));
       })

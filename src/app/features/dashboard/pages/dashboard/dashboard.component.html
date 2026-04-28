@@ -2,13 +2,84 @@
   <h2 class="text-lg font-semibold mb-4">Resumen</h2>
 
   <div class="flex flex-col gap-4">
+    @if (isAdmin()) {
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+      <div class="p-4 bg-white shadow-sm rounded">
+        <div class="text-sm text-gray-600">Niños registrados (global)</div>
+        <div class="text-2xl font-semibold text-gray-800">{{ totalChildrenGlobal() }}</div>
+      </div>
+      <div class="p-4 bg-white shadow-sm rounded">
+        <div class="text-sm text-gray-600">Usuarios con niños asignados</div>
+        <div class="text-2xl font-semibold text-gray-800">{{ totalUsersWithChildren() }}</div>
+      </div>
+      <div class="p-4 bg-white shadow-sm rounded">
+        <div class="text-sm text-gray-600">Promedio de niños por usuario</div>
+        <div class="text-2xl font-semibold text-gray-800">{{ averageChildrenPerUser() }}</div>
+      </div>
+    </div>
+
+    <div class="p-4 bg-white shadow-sm rounded">
+      <div class="text-sm font-medium text-gray-700 mb-3">Distribución global</div>
+
+      <div class="mb-3">
+        <div class="flex justify-between text-sm mb-1">
+          <span>Ingreso Aplicable</span>
+          <span>{{ globalAdmittedPercent() }}%</span>
+        </div>
+        <div class="w-full bg-gray-200 rounded-full h-2.5">
+          <div class="bg-green-500 h-2.5 rounded-full" [style.width.%]="globalAdmittedPercent()"></div>
+        </div>
+      </div>
+
+      <div>
+        <div class="flex justify-between text-sm mb-1">
+          <span>Egreso Aplicable</span>
+          <span>{{ globalGraduatedPercent() }}%</span>
+        </div>
+        <div class="w-full bg-gray-200 rounded-full h-2.5">
+          <div class="bg-blue-500 h-2.5 rounded-full" [style.width.%]="globalGraduatedPercent()"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="overflow-x-auto bg-white shadow-sm rounded">
+      <table class="min-w-full divide-y divide-gray-200">
+        <thead class="bg-gray-50">
+          <tr>
+            <th class="px-4 py-2 text-left text-sm font-medium text-gray-600">Usuario</th>
+            <th class="px-4 py-2 text-center text-sm font-medium text-gray-600">Niños</th>
+            <th class="px-4 py-2 text-center text-sm font-medium text-gray-600">Ingreso</th>
+            <th class="px-4 py-2 text-center text-sm font-medium text-gray-600">Egreso</th>
+            <th class="px-4 py-2 text-center text-sm font-medium text-gray-600">No Aplica</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-gray-100">
+          @for (row of usersBreakdown(); track row.email) {
+          <tr class="hover:bg-gray-50 transition-colors">
+            <td class="px-4 py-2 text-sm text-gray-800">{{ row.email }}</td>
+            <td class="px-4 py-2 text-sm text-center text-gray-800">{{ row.total }}</td>
+            <td class="px-4 py-2 text-sm text-center text-green-600">{{ row.admitted }}</td>
+            <td class="px-4 py-2 text-sm text-center text-blue-600">{{ row.graduated }}</td>
+            <td class="px-4 py-2 text-sm text-center text-red-500">{{ row.notApplicable }}</td>
+          </tr>
+          } @empty {
+          <tr>
+            <td colspan="5" class="px-4 py-3 text-sm text-center text-gray-500">
+              No hay usuarios con niños asignados todavía.
+            </td>
+          </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+    } @else {
     <div class="p-4 bg-white shadow-sm cursor-pointer" (click)="goTo('/admin/children')">
       <div class="flex justify-between items-center mb-4">
         <div class="text-sm font-medium text-gray-700">
           <span>Total de niños registrados</span>
         </div>
         <div>
-          <span class='bg-blue-500 text-white px-2 py-1 rounded'>
+          <span class="bg-blue-500 text-white px-2 py-1 rounded">
             {{ childrenState.children().length }}
           </span>
         </div>
@@ -47,5 +118,6 @@
         </div>
       </div>
     </div>
+    }
   </div>
 </div>

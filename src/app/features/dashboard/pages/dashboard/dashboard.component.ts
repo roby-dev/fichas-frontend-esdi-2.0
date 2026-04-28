@@ -1,5 +1,7 @@
 import { ChildrenState } from '@/features/children/states/children.state';
-import { ChangeDetectionStrategy, Component, computed, inject, OnInit, signal } from '@angular/core';
+import { AdminChildrenState } from '@/features/children/states/admin-children.state';
+import { AuthService } from '@/core/services/auth.service';
+import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
 import { Router } from '@angular/router';
 
 @Component({
@@ -11,8 +13,12 @@ import { Router } from '@angular/router';
 })
 export default class DashboardComponent {
   private readonly router = inject(Router);
+  private readonly authService = inject(AuthService);
 
   readonly childrenState = inject(ChildrenState);
+  readonly adminChildrenState = inject(AdminChildrenState);
+
+  isAdmin = computed(() => this.authService.isAdmin());
 
   total = computed(() => this.childrenState.children().length);
 
@@ -38,6 +44,56 @@ export default class DashboardComponent {
     ).length;
     return Math.round((na / total) * 100);
   });
+
+  totalUsersWithChildren = computed(
+    () => this.adminChildrenState.groupedByUser().filter(g => g.children.length > 0).length
+  );
+
+  totalChildrenGlobal = computed(() =>
+    this.adminChildrenState.groupedByUser().reduce((acc, g) => acc + g.children.length, 0)
+  );
+
+  averageChildrenPerUser = computed(() => {
+    const users = this.totalUsersWithChildren();
+    if (users === 0) return 0;
+    return Math.round((this.totalChildrenGlobal() / users) * 10) / 10;
+  });
+
+  globalAdmittedPercent = computed(() => {
+    const total = this.totalChildrenGlobal();
+    if (total === 0) return 0;
+    const admitted = this.adminChildrenState
+      .groupedByUser()
+      .reduce((acc, g) => acc + g.children.filter(c => c.isCurrentlyAdmitted).length, 0);
+    return Math.round((admitted / total) * 100);
+  });
+
+  globalGraduatedPercent = computed(() => {
+    const total = this.totalChildrenGlobal();
+    if (total === 0) return 0;
+    const graduated = this.adminChildrenState
+      .groupedByUser()
+      .reduce((acc, g) => acc + g.children.filter(c => c.isGraduated).length, 0);
+    return Math.round((graduated / total) * 100);
+  });
+
+  usersBreakdown = computed(() =>
+    this.adminChildrenState
+      .groupedByUser()
+      .map(g => {
+        const total = g.children.length;
+        const admitted = g.children.filter(c => c.isCurrentlyAdmitted).length;
+        const graduated = g.children.filter(c => c.isGraduated).length;
+        return {
+          email: g.user.email,
+          total,
+          admitted,
+          graduated,
+          notApplicable: total - admitted - graduated,
+        };
+      })
+      .sort((a, b) => b.total - a.total)
+  );
 
   goTo(route: string) {
     this.router.navigate([route]);

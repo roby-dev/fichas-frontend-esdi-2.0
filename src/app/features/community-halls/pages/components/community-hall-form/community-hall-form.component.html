@@ -25,7 +25,12 @@
     >
       <option value="" disabled>Seleccione Comité de Gestión</option>
       @for(committee of committees(); track committee.id){
-      <option [value]="committee.id">{{ committee.committeeId }} - {{ committee.name }}</option>
+      <option [value]="committee.id">
+        {{ committee.committeeId }} - {{ committee.name }}
+        @if (committee.user?.email) {
+          - {{ committee.user?.email }}
+        }
+      </option>
       }
     </select>
     @if (managementCommitteeIdControl().invalid() && managementCommitteeIdControl().touched()) {

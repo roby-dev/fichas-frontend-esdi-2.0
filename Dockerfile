@@ -25,8 +25,8 @@ FROM nginx:alpine
 COPY nginx.conf /etc/nginx/conf.d/default.conf
 
 # Copiamos los archivos estáticos desde la etapa de build
-# NOTA: En tu angular.json outputPath es "public", por lo tanto copiamos desde /app/public
-COPY --from=build /app/public /usr/share/nginx/html
+# Angular 17+ con el application builder genera los archivos web dentro de la subcarpeta 'browser'
+COPY --from=build /app/public/browser /usr/share/nginx/html
 
 # Railway ignora EXPOSE y usa su propia variable PORT, pero la dejamos por convención
 EXPOSE 80

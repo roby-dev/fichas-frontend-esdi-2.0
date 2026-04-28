@@ -1,0 +1,235 @@
+<div class="p-0 sm:p-4 flex flex-col gap-8">
+
+  <h2 class="text-lg font-semibold">Sesiones</h2>
+
+  <!-- ═══════════════════════════════════════════════ -->
+  <!-- SECCIÓN 1: Usuarios activos (Summary)          -->
+  <!-- ═══════════════════════════════════════════════ -->
+  <section>
+    <div class="flex items-center justify-between mb-3">
+      <h3 class="text-base font-medium text-gray-700">Usuarios activos</h3>
+      <div class="flex items-center gap-2">
+        <span class="text-sm text-gray-600">
+          Total:
+          <span class="font-bold text-white bg-blue-500 py-0.5 px-2 rounded text-xs">
+            {{ summaryTotal() }}
+          </span>
+        </span>
+        @if (isSummaryLoading()) {
+        <span class="text-sm text-gray-400 animate-pulse">Cargando...</span>
+        }
+      </div>
+    </div>
+
+    <div class="overflow-x-auto bg-white shadow-sm rounded">
+      <table class="min-w-full divide-y divide-gray-200">
+        <thead class="bg-gray-50">
+          <tr>
+            <th class="px-4 py-2 text-left text-sm font-medium text-gray-600">Estado</th>
+            <th class="px-4 py-2 text-left text-sm font-medium text-gray-600">Email</th>
+            <th class="px-4 py-2 text-left text-sm font-medium text-gray-600 hidden sm:table-cell">Roles</th>
+            <th class="px-4 py-2 text-center text-sm font-medium text-gray-600">Activas</th>
+            <th class="px-4 py-2 text-center text-sm font-medium text-gray-600 hidden md:table-cell">Total</th>
+            <th class="px-4 py-2 text-left text-sm font-medium text-gray-600 hidden lg:table-cell">Última conexión</th>
+            <th class="px-4 py-2 text-left text-sm font-medium text-gray-600 hidden lg:table-cell">Última IP</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-gray-100">
+          @for (user of summaries(); track user.userId) {
+          <tr class="hover:bg-gray-50 transition-colors">
+            <td class="px-4 py-3 text-sm">
+              @if (user.isOnline) {
+              <span
+                class="bg-green-100 text-green-800 text-xs font-medium px-2.5 py-0.5 rounded-full flex items-center w-fit gap-1">
+                <span class="w-1.5 h-1.5 bg-green-600 rounded-full animate-pulse"></span> Online
+              </span>
+              } @else {
+              <span
+                class="bg-gray-100 text-gray-800 text-xs font-medium px-2.5 py-0.5 rounded-full flex items-center w-fit gap-1">
+                <span class="w-1.5 h-1.5 bg-gray-500 rounded-full"></span> Offline
+              </span>
+              }
+            </td>
+            <td class="px-4 py-3 text-sm text-gray-800">
+              {{ user.email }}
+            </td>
+            <td class="px-4 py-3 text-sm hidden sm:table-cell">
+              @for (role of user.roles; track role) {
+              <span class="bg-indigo-100 text-indigo-800 text-xs font-medium px-2 py-0.5 rounded mr-1">
+                {{ role }}
+              </span>
+              }
+            </td>
+            <td class="px-4 py-3 text-sm text-center">
+              <span class="bg-blue-100 text-blue-800 text-xs font-medium px-2 py-0.5 rounded">
+                {{ user.activeSessions }}
+              </span>
+            </td>
+            <td class="px-4 py-3 text-sm text-center text-gray-500 hidden md:table-cell">
+              {{ user.totalSessions }}
+            </td>
+            <td class="px-4 py-3 text-sm text-gray-500 hidden lg:table-cell whitespace-nowrap">
+              {{ user.lastSeenAt | date: 'dd/MM/yyyy HH:mm:ss' }}
+            </td>
+            <td class="px-4 py-3 text-sm text-gray-500 hidden lg:table-cell">
+              {{ user.lastIpAddress }}
+            </td>
+          </tr>
+          } @empty {
+          <tr>
+            <td colspan="7" class="px-4 py-8 text-sm text-center text-gray-500">
+              No se encontraron usuarios.
+            </td>
+          </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+
+    @if (summaryTotalPages > 1) {
+    <div class="flex items-center justify-between mt-3">
+      <span class="text-sm text-gray-600">
+        Página {{ summaryCurrentPage }} de {{ summaryTotalPages }}
+      </span>
+      <div class="flex gap-2">
+        <button (click)="summaryPrevPage()" [disabled]="summaryCurrentPage <= 1"
+          class="px-3 py-1 text-sm rounded border border-gray-300 hover:bg-gray-50 transition-colors disabled:opacity-40 disabled:cursor-not-allowed">
+          Anterior
+        </button>
+        <button (click)="summaryNextPage()" [disabled]="summaryCurrentPage >= summaryTotalPages"
+          class="px-3 py-1 text-sm rounded border border-gray-300 hover:bg-gray-50 transition-colors disabled:opacity-40 disabled:cursor-not-allowed">
+          Siguiente
+        </button>
+      </div>
+    </div>
+    }
+  </section>
+
+  <!-- ═══════════════════════════════════════════════ -->
+  <!-- SECCIÓN 2: Historial de sesiones               -->
+  <!-- ═══════════════════════════════════════════════ -->
+  <section>
+    <div class="flex items-center justify-between mb-3">
+      <h3 class="text-base font-medium text-gray-700">Historial de sesiones</h3>
+      <button (click)="toggleFilters()"
+        class="text-sm text-blue-500 hover:text-blue-700 transition-colors flex items-center gap-1">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z">
+          </path>
+        </svg>
+        {{ showFilters() ? 'Ocultar filtros' : 'Mostrar filtros' }}
+      </button>
+    </div>
+
+    <div class="flex flex-col gap-4">
+      @if (showFilters()) {
+      <div class="bg-gray-50 p-4 rounded border border-gray-200 flex flex-col sm:flex-row gap-4 items-end">
+        <div class="w-full sm:w-auto">
+          <label class="block text-xs font-medium text-gray-700 mb-1">User ID</label>
+          <input type="text" [ngModel]="filterUserId()" (ngModelChange)="filterUserId.set($event)"
+            placeholder="Ej: 60d5ec..."
+            class="w-full sm:w-64 border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm" />
+        </div>
+
+        <div class="w-full sm:w-auto">
+          <label class="block text-xs font-medium text-gray-700 mb-1">Estado</label>
+          <select [ngModel]="filterActive()" (ngModelChange)="filterActive.set($event)"
+            class="w-full sm:w-48 border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm">
+            <option [ngValue]="undefined">Todas</option>
+            <option [ngValue]="true">Activas</option>
+            <option [ngValue]="false">Inactivas</option>
+          </select>
+        </div>
+
+        <div class="flex gap-2 w-full sm:w-auto justify-end mt-2 sm:mt-0">
+          <button (click)="clearFilters()"
+            class="px-3 py-2 text-sm text-gray-600 bg-white border border-gray-300 rounded-md hover:bg-gray-50 transition-colors">
+            Limpiar
+          </button>
+          <button (click)="onFilterChange()"
+            class="px-3 py-2 text-sm text-white bg-blue-600 rounded-md hover:bg-blue-700 transition-colors">
+            Filtrar
+          </button>
+        </div>
+      </div>
+      }
+
+      <!-- Info de resultados -->
+      <div class="flex items-center justify-between">
+        <span class="text-sm text-gray-600">
+          Total de sesiones:
+          <span class="font-bold text-white bg-blue-500 py-0.5 px-2 rounded text-xs">
+            {{ total() }}
+          </span>
+        </span>
+        @if (isLoading()) {
+        <span class="text-sm text-gray-400 animate-pulse">Cargando...</span>
+        }
+      </div>
+
+      <!-- Tabla de historial -->
+      <div class="overflow-x-auto bg-white shadow-sm rounded">
+        <table class="min-w-full divide-y divide-gray-200">
+          <thead class="bg-gray-50">
+            <tr>
+              <th class="px-4 py-2 text-left text-sm font-medium text-gray-600">Usuario</th>
+              <th class="px-4 py-2 text-left text-sm font-medium text-gray-600">IP</th>
+              <th class="px-4 py-2 text-left text-sm font-medium text-gray-600 hidden lg:table-cell">Agente</th>
+              <th class="px-4 py-2 text-left text-sm font-medium text-gray-600 hidden md:table-cell">Token ID</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-gray-100">
+            @for (session of sessions(); track session.id) {
+            <tr class="hover:bg-gray-50 transition-colors">
+              <td class="px-4 py-3 text-sm text-gray-800">
+                @if (session.user) {
+                <span class="text-sm">{{ session.user.email }}</span>
+                } @else {
+                <span class="font-mono text-xs">{{ session.userId }}</span>
+                }
+              </td>
+              <td class="px-4 py-3 text-sm text-gray-600">
+                {{ session.ipAddress }}
+              </td>
+              <td class="px-4 py-3 text-sm text-gray-500 hidden lg:table-cell truncate max-w-xs"
+                [title]="session.userAgent">
+                {{ session.userAgent }}
+              </td>
+              <td class="px-4 py-3 text-sm text-gray-400 font-mono text-xs hidden md:table-cell truncate max-w-[150px]"
+                [title]="session.tokenId">
+                {{ session.tokenId }}
+              </td>
+            </tr>
+            } @empty {
+            <tr>
+              <td colspan="4" class="px-4 py-8 text-sm text-center text-gray-500">
+                No se encontraron sesiones.
+              </td>
+            </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+
+      @if (totalPages > 1) {
+      <div class="flex items-center justify-between">
+        <span class="text-sm text-gray-600">
+          Página {{ currentPage }} de {{ totalPages }}
+        </span>
+        <div class="flex gap-2">
+          <button (click)="prevPage()" [disabled]="currentPage <= 1"
+            class="px-3 py-1 text-sm rounded border border-gray-300 hover:bg-gray-50 transition-colors disabled:opacity-40 disabled:cursor-not-allowed">
+            Anterior
+          </button>
+          <button (click)="nextPage()" [disabled]="currentPage >= totalPages"
+            class="px-3 py-1 text-sm rounded border border-gray-300 hover:bg-gray-50 transition-colors disabled:opacity-40 disabled:cursor-not-allowed">
+            Siguiente
+          </button>
+        </div>
+      </div>
+      }
+    </div>
+  </section>
+
+</div>

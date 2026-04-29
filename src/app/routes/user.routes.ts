@@ -22,6 +22,11 @@ export const USER_ROUTES: Routes = [
     loadComponent: () => import('@/features/community-halls/pages/community-halls/community-halls.component'),
   },
   {
+    path: 'alert-signals',
+    canActivate: [committeeGuard],
+    loadComponent: () => import('@/features/alert-signals/pages/alert-signals/alert-signals.component'),
+  },
+  {
     path: 'unauthorized',
     loadComponent: () => import('@/features/unauthorized/pages/unauthorized/unauthorized.component'),
   },

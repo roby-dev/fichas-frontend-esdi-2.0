@@ -1,40 +1,58 @@
-<div class="bg-white p-4 space-y-2 lg:h-[200px] flex flex-col justify-between">
-  <div class="flex flex-col gap-1">
-    <div class="flex items-center justify-start text-sm gap-4 text-gray-600 font-extralight">
-      <div>
-        <span>{{ child().documentNumber }}</span>
-      </div>
-      <div>
-        <span>{{ child().admissionDate | date : 'dd MMM. yyyy' : 'UTC' }}</span>
-      </div>
-      <div>
-        <span> {{ child().ageInMonths }} meses </span>
-      </div>
-    </div>
+<div
+  class="bg-white rounded-lg shadow-sm border border-gray-100 border-l-4 p-4 flex flex-col gap-3 max-h-64 overflow-y-auto sm:max-h-none sm:overflow-visible"
+  [ngClass]="{
+    'border-l-blue-400': statusColor === 'blue',
+    'border-l-gray-200': statusColor === 'red'
+  }">
 
-    <div class="flex items-center justify-between gap-1">
-      <div class="max-w-[200px]">
-        <span class="text-lg font-bold text-gray-800"> </span>
-        {{ fullName }}
-      </div>
-      <div>
-        <span class="px-2 py-1 rounded text-white text-center text-xs font-medium" [ngClass]="{
-            'bg-red-500/80': statusColor === 'red',
-            'bg-blue-500/80': statusColor === 'blue'
-          }">
-          {{ statusLabel }}
-        </span>
-      </div>
-    </div>
+  <!-- Local -->
+  @if (child().communityHall?.name) {
+    <p class="text-xs font-medium text-gray-400 uppercase tracking-widest">{{ child().communityHall!.name }}</p>
+  }
 
+  <!-- Nombre + estado -->
+  <div class="flex items-start justify-between gap-3">
+    <p class="text-base font-bold text-gray-900 uppercase leading-snug">{{ fullName }}</p>
+    <span
+      class="shrink-0 px-2.5 py-1 rounded-full text-xs font-semibold"
+      [ngClass]="{
+        'bg-blue-100 text-blue-700': statusColor === 'blue',
+        'bg-red-100 text-red-700': statusColor === 'red'
+      }">
+      {{ statusLabel }}
+    </span>
   </div>
 
-  <div class="text-[13px] md:text-sm text-gray-500 italic space-y-1 font-light flex flex-col gap-1">
-    <div class="">
-      <span>{{ child().admissionFormatted }}</span>
+  <!-- Datos -->
+  <dl class="flex flex-col gap-2">
+    <div class="flex gap-3">
+      <dt class="text-md text-gray-500 w-36 shrink-0">DNI</dt>
+      <dd class="text-md text-gray-900">{{ child().documentNumber }}</dd>
     </div>
-    <div>
-      <span>{{ child().graduationFormatted }}</span>
+    <div class="flex gap-3">
+      <dt class="text-md text-gray-500 w-36 shrink-0">Edad</dt>
+      <dd class="text-md text-gray-900">{{ child().ageInMonths }} meses</dd>
     </div>
-  </div>
+    <div class="flex gap-3">
+      <dt class="text-md text-gray-500 w-36 shrink-0">F. de nacimiento</dt>
+      <dd class="text-md text-gray-900">{{ child().birthday | date:"EEEE d 'de' MMMM 'del' y":'UTC' }}</dd>
+    </div>
+    <div class="flex gap-3">
+      <dt class="text-md text-gray-500 w-36 shrink-0">F. de afiliación</dt>
+      <dd class="text-md text-gray-900">{{ child().admissionDate | date:"EEEE d 'de' MMMM 'del' y":'UTC' }}</dd>
+    </div>
+  </dl>
+
+  <!-- Info de admisión / egreso -->
+  @if (child().admissionFormatted || child().graduationFormatted) {
+    <div class="pt-2.5 border-t border-gray-100 flex flex-col gap-1">
+      @if (child().admissionFormatted) {
+        <p class="text-sm text-gray-500">{{ child().admissionFormatted }}</p>
+      }
+      @if (child().graduationFormatted) {
+        <p class="text-sm text-gray-500">{{ child().graduationFormatted }}</p>
+      }
+    </div>
+  }
+
 </div>

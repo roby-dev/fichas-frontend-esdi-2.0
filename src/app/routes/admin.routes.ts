@@ -33,6 +33,10 @@ export const ADMIN_ROUTES: Routes = [
     loadComponent: () => import('@/features/admin/pages/sessions/sessions.component'),
   },
   {
+    path: 'users',
+    loadComponent: () => import('@/features/admin/pages/users/users.component'),
+  },
+  {
     path: '',
     redirectTo: 'dashboard',
     pathMatch: 'full',

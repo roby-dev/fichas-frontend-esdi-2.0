@@ -1,7 +1,5 @@
 import { AdminCommittee } from '@/features/committees/interfaces/admin-committee.interface';
 import { AdminCommitteeState } from '@/features/committees/states/admin-committee.state';
-import { CommitteeState } from '@/features/committees/states/committee.state';
-
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 import { CommitteeFormComponent } from '../committee-form/committee-form.component';
 import { CreateCommitteeRequest } from '@/features/committees/interfaces/create-committee-request.interface';
@@ -9,78 +7,43 @@ import { AdminCommitteesService } from '@/features/committees/services/admin-com
 import { switchMap } from 'rxjs';
 import { ButtonComponent } from '@/features/shared/components/button/button.component';
 import { ModalComponent } from '@/features/shared/components/modal/modal.component';
-import { AssignCommitteeRequest } from '@/features/committees/interfaces/assign-committee-request.interface';
-import { AssignCommitteeFormComponent } from '../assign-committee/assign-committee-form.component';
-import { UserState } from '@/features/users/states/user.state';
 
 @Component({
   standalone: true,
   selector: 'app-admin-committees',
-  imports: [CommitteeFormComponent, ButtonComponent, ModalComponent, AssignCommitteeFormComponent],
+  imports: [CommitteeFormComponent, ButtonComponent, ModalComponent],
   templateUrl: './admin-committees.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AdminCommitteesComponent {
   private readonly adminComitteesService = inject(AdminCommitteesService);
-  readonly committeeState = inject(CommitteeState);
-  readonly userState = inject(UserState);
   readonly adminCommitteeState = inject(AdminCommitteeState);
 
-  isCreateUpdateModalOpen = signal(false);
-  isAssignModalOpen = signal(false);
-  selectedComittee = signal<AdminCommittee | null>(null);
+  isModalOpen = signal(false);
+  selectedCommittee = signal<AdminCommittee | null>(null);
   isLoading = signal(false);
 
-  openCreateUpdateModal(): void {
-    this.isCreateUpdateModalOpen.set(true);
+  openModal(committee: AdminCommittee | null = null): void {
+    this.selectedCommittee.set(committee);
+    this.isModalOpen.set(true);
   }
 
-  openAssignModal(): void {
-    this.isAssignModalOpen.set(true);
-  }
-
-  closeCreateUpdateModal(): void {
-    this.isCreateUpdateModalOpen.set(false);
-    this.selectedComittee.set(null);
-  }
-
-  closeAssignModal(): void {
-    this.isAssignModalOpen.set(false);
-  }
-
-  onSelectedCommittee(committee: AdminCommittee) {
-    this.selectedComittee.set(committee);
-    this.openCreateUpdateModal();
+  closeModal(): void {
+    this.isModalOpen.set(false);
+    this.selectedCommittee.set(null);
   }
 
   onCommitteeSaved(committee: CreateCommitteeRequest): void {
     this.isLoading.set(true);
 
-    const request$ = this.selectedComittee()
-      ? this.adminComitteesService.updateCommittee(this.selectedComittee()!.id, committee)
+    const request$ = this.selectedCommittee()
+      ? this.adminComitteesService.updateCommittee(this.selectedCommittee()!.id, committee)
       : this.adminComitteesService.createCommittee(committee);
 
     request$.pipe(switchMap(() => this.adminCommitteeState.loadCommitteees())).subscribe({
       next: () => {
         this.isLoading.set(false);
-        this.closeCreateUpdateModal();
-      },
-      error: (err) => {
-        this.isLoading.set(false);
-        console.error(err);
-      },
-    });
-  }
-
-  onAssignSaved(assignCommittee: AssignCommitteeRequest) {
-    this.isLoading.set(true);
-
-    const request$ = this.adminComitteesService.createCommitteeForUser(assignCommittee);
-
-    request$.pipe(switchMap(() => this.committeeState.loadAllCommittes())).subscribe({
-      next: () => {
-        this.isLoading.set(false);
-        this.closeAssignModal();
+        this.closeModal();
       },
       error: (err) => {
         this.isLoading.set(false);

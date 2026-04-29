@@ -1,0 +1,119 @@
+<div class="p-0 sm:p-4 flex flex-col gap-6">
+
+  <!-- Usuarios -->
+  <div>
+    <div class="flex items-center justify-between mb-4">
+      <h2 class="text-lg font-semibold">Usuarios</h2>
+      <div class="flex gap-2">
+        <button
+          (click)="openAssignModal()"
+          class="flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium bg-white border border-blue-500 text-blue-500 rounded-lg hover:brightness-90 transition-all">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 2a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+          </svg>
+          Asignar comité
+        </button>
+        <button
+          (click)="openCreateModal()"
+          class="flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium bg-blue-500 text-white rounded-lg hover:brightness-90 transition-all">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+          </svg>
+          Crear usuario
+        </button>
+      </div>
+    </div>
+
+    <div class="overflow-x-auto bg-white shadow-sm rounded">
+      <table class="min-w-full divide-y divide-gray-200">
+        <thead class="bg-gray-50">
+          <tr>
+            <th class="px-4 py-2 text-left text-sm font-medium text-gray-600">Correo</th>
+            <th class="px-4 py-2 text-left text-sm font-medium text-gray-600">Roles</th>
+            <th class="px-4 py-2 text-left text-sm font-medium text-gray-600 hidden lg:table-cell">ID</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-gray-100">
+          @for (user of users(); track user.id) {
+            <tr class="hover:bg-gray-50 transition-colors">
+              <td class="px-4 py-2 text-sm text-gray-800">{{ user.email }}</td>
+              <td class="px-4 py-2">
+                <div class="flex flex-wrap gap-1">
+                  @for (role of user.roles; track role) {
+                    <span class="bg-indigo-100 text-indigo-800 text-xs font-medium px-2 py-0.5 rounded">
+                      {{ role }}
+                    </span>
+                  } @empty {
+                    <span class="text-xs text-gray-400">Sin roles</span>
+                  }
+                </div>
+              </td>
+              <td class="px-4 py-2 text-xs text-gray-400 font-mono hidden lg:table-cell">{{ user.id }}</td>
+            </tr>
+          } @empty {
+            <tr>
+              <td colspan="3" class="px-4 py-8 text-sm text-center text-gray-500">
+                No hay usuarios registrados.
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Comités asignados por usuario -->
+  <div>
+    <h2 class="text-lg font-semibold mb-4">Comités asignados</h2>
+
+    <div class="overflow-x-auto bg-white shadow-sm rounded">
+      <table class="min-w-full divide-y divide-gray-200">
+        <thead class="bg-gray-50">
+          <tr>
+            <th class="px-4 py-2 text-center text-sm font-medium text-gray-600 w-[60px]">ID</th>
+            <th class="px-4 py-2 text-left text-sm font-medium text-gray-600">Comité</th>
+            <th class="px-4 py-2 text-left text-sm font-medium text-gray-600">Usuario</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-gray-100">
+          @for (committee of committeeState.adminCommittees(); track committee.id) {
+            <tr class="hover:bg-gray-50 transition-colors">
+              <td class="px-4 py-2 text-sm text-gray-800 text-center">{{ committee.committeeId }}</td>
+              <td class="px-4 py-2 text-sm text-gray-800">{{ committee.name }}</td>
+              <td class="px-4 py-2 text-sm text-gray-500">{{ committee.user?.email }}</td>
+            </tr>
+          } @empty {
+            <tr>
+              <td colspan="3" class="px-4 py-8 text-sm text-center text-gray-500">
+                No hay comités asignados.
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+</div>
+
+@if (showCreateModal()) {
+  <app-modal title="Crear usuario" (closed)="closeCreateModal()">
+    <app-user-form
+      [isLoading]="isCreating()"
+      (submitted)="onCreateSubmit($event)"
+      (cancelled)="closeCreateModal()"
+    />
+  </app-modal>
+}
+
+@if (showAssignModal()) {
+  <app-modal title="Asignar comité a usuario" size="lg" (closed)="closeAssignModal()">
+    <app-assign-committee-form
+      [committees]="adminCommitteeState.committees()"
+      [users]="users()"
+      [isLoading]="isAssigning()"
+      (saveAssignCommitteeEvent)="onAssignSubmit($event)"
+    />
+  </app-modal>
+}

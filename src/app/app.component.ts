@@ -18,9 +18,7 @@ export class AppComponent {
 
   constructor() {
     window.addEventListener('beforeinstallprompt', (event: Event) => {
-      if (!this.isMobile()) {
-        return;
-      }
+      if (!this.isMobile() || this.isInstalled()) return;
       event.preventDefault();
       this.deferredPrompt = event;
       this.installAvailable.set(true);
@@ -46,6 +44,13 @@ export class AppComponent {
 
   closeSheet() {
     this.showInstallSheet.set(false);
+  }
+
+  isInstalled(): boolean {
+    return (
+      window.matchMedia('(display-mode: standalone)').matches ||
+      (window.navigator as any).standalone === true
+    );
   }
 
   isMobile(): boolean {

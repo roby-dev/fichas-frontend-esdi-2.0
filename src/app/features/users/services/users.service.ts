@@ -25,7 +25,7 @@ export class UsersService {
     return this.http.get<User>(`${this.baseUrl}/${id}`);
   }
 
-  assignRoles(id: string, roles: string[][]): Observable<User> {
+  assignRoles(id: string, roles: string[]): Observable<User> {
     return this.http.patch<User>(`${this.baseUrl}/${id}/roles`, { userId: id, roles });
   }
 }

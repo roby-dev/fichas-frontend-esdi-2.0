@@ -1,0 +1,48 @@
+<div
+  class="bg-white rounded-lg shadow-sm border border-gray-100 border-l-4 p-4 flex flex-col gap-3 max-h-64 overflow-y-auto sm:max-h-none sm:overflow-visible"
+  [ngClass]="borderClasses()">
+
+  <!-- Local -->
+  <p class="text-xs font-medium text-gray-400 uppercase tracking-widest">{{ child().communityHallName }}</p>
+
+  <!-- Nombre + estado -->
+  <div class="flex items-start justify-between gap-3">
+    <p class="text-base font-bold text-gray-900 uppercase leading-snug">{{ child().fullName }}</p>
+    <div class="shrink-0 flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold"
+      [ngClass]="signalBadgeClasses()">
+      <span class="w-1.5 h-1.5 rounded-full shrink-0" [ngClass]="dotColor()"></span>
+      {{ isActive() ? 'Activa' : 'Sin señal' }}
+    </div>
+  </div>
+
+  <!-- Datos -->
+  <dl class="flex flex-col gap-2">
+    <div class="flex gap-3">
+      <dt class="text-md text-gray-500 w-36 shrink-0">DNI</dt>
+      <dd class="text-md text-gray-900">{{ child().documentNumber }}</dd>
+    </div>
+    <div class="flex gap-3">
+      <dt class="text-md text-gray-500 w-36 shrink-0">Edad</dt>
+      <dd class="text-md text-gray-900">{{ ageLabel() }}</dd>
+    </div>
+    <div class="flex gap-3">
+      <dt class="text-md text-gray-500 w-36 shrink-0">F. de nacimiento</dt>
+      <dd class="text-md text-gray-900">{{ child().birthday | date:"EEEE d 'de' MMMM 'del' y":'UTC' }}</dd>
+    </div>
+    <div class="flex gap-3">
+      <dt class="text-md text-gray-500 w-36 shrink-0">F. de afiliación</dt>
+      <dd class="text-md text-gray-900">{{ child().admissionDate | date:"EEEE d 'de' MMMM 'del' y":'UTC' }}</dd>
+    </div>
+  </dl>
+
+  <!-- Señal activa -->
+  @if (isActive()) {
+  <div class="pt-2.5 border-t border-gray-100 flex flex-col gap-1">
+    <p class="text-md font-semibold text-gray-900">{{ child().activeAlertSignal }}</p>
+    @if (child().alertSignalSchedule) {
+    <p class="text-sm text-gray-500 leading-relaxed">{{ child().alertSignalSchedule }}</p>
+    }
+  </div>
+  }
+
+</div>

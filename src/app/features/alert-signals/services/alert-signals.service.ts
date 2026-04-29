@@ -28,7 +28,7 @@ export class AlertSignalsService {
     return this.http.get<AlertSignalChild[]>(this.baseUrl);
   }
 
-  getAlertSignalsByCommittee(id: string): Observable<AlertSignalChild[]> {
-    return this.http.get<AlertSignalChild[]>(`${this.baseUrl}/by-committee/${id}`);
+  getAlertSignalsByCommittee(committeeCode: string): Observable<AlertSignalChild[]> {
+    return this.http.get<AlertSignalChild[]>(`${this.baseUrl}/committee/${committeeCode}`);
   }
 }

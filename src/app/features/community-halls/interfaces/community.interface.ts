@@ -4,6 +4,6 @@ export interface CommunityHall {
   id: string;
   localId: string;
   name: string;
-  managementCommitteeId: string;
-  managementCommittee: Committee;
+  committeeRef: string;
+  committee: Committee;
 }

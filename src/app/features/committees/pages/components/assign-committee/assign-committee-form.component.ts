@@ -19,30 +19,28 @@ export class AssignCommitteeFormComponent implements OnInit {
   committees = input.required<AdminCommittee[]>();
 
   assignModel = signal({
-    committeeId: '',
-    userId: '',
+    committeeRef: '',
+    userRef: '',
   });
 
   form = form(this.assignModel, (schemaPath) => {
-    required(schemaPath.committeeId, { message: 'Seleccione un comité' });
-    required(schemaPath.userId, { message: 'Seleccione un usuario' });
+    required(schemaPath.committeeRef, { message: 'Seleccione un comité' });
+    required(schemaPath.userRef, { message: 'Seleccione un usuario' });
   });
 
   ngOnInit(): void {}
 
-  get committeeIdControl() { return this.form.committeeId!; }
-  get userIdControl() { return this.form.userId!; }
+  get committeeRefControl() { return this.form.committeeRef!; }
+  get userRefControl() { return this.form.userRef!; }
 
   onSubmit(event: Event) {
     event.preventDefault();
     if (this.form().invalid()) return;
 
     const value = this.assignModel();
-    const committee = this.committees().find(x=> x.id == value.committeeId);
     const request: AssignCommitteeRequest = {
-      committeeId: committee?.committeeId ?? '',
-      name: committee?.name ?? '',
-      userId: value.userId ?? '',
+      committeeRef: value.committeeRef ?? '',
+      userRef: value.userRef ?? '',
     };
 
     this.saveAssignCommitteeEvent.emit(request);

@@ -10,14 +10,15 @@ import { CreateCommitteeRequest } from '../interfaces/create-committee-request.i
 })
 export class CommitteesService {
   private readonly http = inject(HttpClient);
-  private readonly baseUrl = `${environment.apiUrl}/api/v1/management-committees`;
+  private readonly baseUrl = `${environment.apiUrl}/api/v1/committees`;
+  private readonly membershipsUrl = `${environment.apiUrl}/api/v1/committee-memberships`;
 
   createCommittee(request: CreateCommitteeRequest) {
     return this.http.post<Committee>(`${this.baseUrl}`, request);
   }
 
   getCommitteesByUser(): Observable<Committee[]> {
-    return this.http.get<Committee[]>(`${this.baseUrl}/by-user`);
+    return this.http.get<Committee[]>(`${this.membershipsUrl}/me`);
   }
 
   getCommittees(): Observable<Committee[]> {

@@ -1,5 +1,4 @@
 export interface AssignCommitteeRequest {
-  userId: string;
-  committeeId: string;
-  name: string;
+  userRef: string;
+  committeeRef: string;
 }

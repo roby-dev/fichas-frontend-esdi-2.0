@@ -3,6 +3,7 @@ import {
   Component,
   HostListener,
   inject,
+  OnInit,
   signal,
 } from '@angular/core';
 import { switchMap, of } from 'rxjs';
@@ -24,7 +25,7 @@ import { AssignCommitteeRequest } from '@/features/committees/interfaces/assign-
   templateUrl: './users.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export default class UsersComponent {
+export default class UsersComponent implements OnInit {
   private readonly userState = inject(UserState);
   private readonly usersService = inject(UsersService);
   private readonly toastService = inject(ToastService);
@@ -39,6 +40,10 @@ export default class UsersComponent {
   showAssignModal = signal(false);
   isCreating = signal(false);
   isAssigning = signal(false);
+
+  ngOnInit(): void {
+    this.adminCommitteeState.loadCommitteeMemberships().subscribe();
+  }
 
   openCreateModal(): void { this.showCreateModal.set(true); }
   closeCreateModal(): void { this.showCreateModal.set(false); }
@@ -78,7 +83,7 @@ export default class UsersComponent {
 
     this.adminCommitteesService
       .createCommitteeForUser(request)
-      .pipe(switchMap(() => this.committeeState.loadAllCommittes()))
+      .pipe(switchMap(() => this.adminCommitteeState.loadCommitteeMemberships()))
       .subscribe({
         next: () => {
           this.isAssigning.set(false);

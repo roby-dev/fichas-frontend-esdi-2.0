@@ -21,13 +21,13 @@ export class CommunityHallFormComponent implements OnInit {
   communityHallModel = signal<Partial<CreateCommunityHallRequest>>({
     localId: '',
     name: '',
-    managementCommitteeId: '',
+    committeeRef: '',
   });
 
   form = form(this.communityHallModel, (schemaPath) => {
     required(schemaPath.localId!, { message: 'ID de local requerido' });
     required(schemaPath.name!, { message: 'Nombre requerido' });
-    required(schemaPath.managementCommitteeId!, { message: 'Seleccione un comité' });
+    required(schemaPath.committeeRef!, { message: 'Seleccione un comité' });
   });
 
   ngOnInit(): void {
@@ -36,14 +36,14 @@ export class CommunityHallFormComponent implements OnInit {
       this.communityHallModel.set({
         localId: c.localId ?? '',
         name: c.name ?? '',
-        managementCommitteeId: c.managementCommitteeId ?? '',
+        committeeRef: c.committeeRef ?? '',
       });
     }
   }
 
   get localIdControl() { return this.form.localId!; }
   get nameControl() { return this.form.name!; }
-  get managementCommitteeIdControl() { return this.form.managementCommitteeId!; }
+  get committeeRefControl() { return this.form.committeeRef!; }
 
   onSubmit(event: Event): void {
     event.preventDefault();
@@ -54,7 +54,7 @@ export class CommunityHallFormComponent implements OnInit {
     const request: CreateCommunityHallRequest = {
       localId: value.localId ?? '',
       name: value.name ?? '',
-      managementCommitteeId: value.managementCommitteeId ?? '',
+      committeeRef: value.committeeRef ?? '',
     };
 
     this.saveCommunityHallEvent.emit(request);

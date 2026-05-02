@@ -2,19 +2,19 @@
   <div>
     <label class="block text-sm font-medium text-gray-700 mb-1">Comité de Gestión</label>
     <select
-      [formField]="committeeIdControl"
+      [formField]="committeeRefControl"
       class="mt-1 block w-full rounded-lg border px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
-      [class.border-red-500]="committeeIdControl().invalid() && committeeIdControl().touched()"
-      [class.border-gray-300]="!(committeeIdControl().invalid() && committeeIdControl().touched())"
+      [class.border-red-500]="committeeRefControl().invalid() && committeeRefControl().touched()"
+      [class.border-gray-300]="!(committeeRefControl().invalid() && committeeRefControl().touched())"
     >
       <option value="" disabled>Seleccione Comité de Gestión</option>
       @for(committee of committees(); track committee.id){
       <option [value]="committee.id">{{ committee.committeeId }} - {{ committee.name }}</option>
       }
     </select>
-    @if (committeeIdControl().invalid() && committeeIdControl().touched()) {
+    @if (committeeRefControl().invalid() && committeeRefControl().touched()) {
       <div class="mt-1 text-xs text-red-500">
-        @for (error of committeeIdControl().errors(); track error) {
+        @for (error of committeeRefControl().errors(); track error) {
           <span class="block">{{ error.message }}</span>
         }
       </div>
@@ -24,19 +24,19 @@
   <div>
     <label class="block text-sm font-medium text-gray-700 mb-1">Usuario</label>
     <select
-      [formField]="userIdControl"
+      [formField]="userRefControl"
       class="mt-1 block w-full rounded-lg border px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
-      [class.border-red-500]="userIdControl().invalid() && userIdControl().touched()"
-      [class.border-gray-300]="!(userIdControl().invalid() && userIdControl().touched())"
+      [class.border-red-500]="userRefControl().invalid() && userRefControl().touched()"
+      [class.border-gray-300]="!(userRefControl().invalid() && userRefControl().touched())"
     >
       <option value="" disabled>Seleccione Usuario</option>
       @for(user of users(); track user.email){
       <option [value]="user.id">{{ user.email }}</option>
       }
     </select>
-    @if (userIdControl().invalid() && userIdControl().touched()) {
+    @if (userRefControl().invalid() && userRefControl().touched()) {
       <div class="mt-1 text-xs text-red-500">
-        @for (error of userIdControl().errors(); track error) {
+        @for (error of userRefControl().errors(); track error) {
           <span class="block">{{ error.message }}</span>
         }
       </div>

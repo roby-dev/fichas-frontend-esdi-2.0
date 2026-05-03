@@ -72,6 +72,85 @@
         </tbody>
       </table>
     </div>
+
+    @if (stats()) {
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 mt-4">
+      <!-- Niños por Comité -->
+      <div class="p-4 bg-white shadow-sm rounded overflow-x-auto">
+        <h3 class="text-sm font-medium text-gray-700 mb-3">Niños por Comité</h3>
+        <table class="min-w-full divide-y divide-gray-200">
+          <thead class="bg-gray-50">
+            <tr>
+              <th class="px-4 py-2 text-left text-sm font-medium text-gray-600">Comité</th>
+              <th class="px-4 py-2 text-center text-sm font-medium text-gray-600">Niños</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-gray-100">
+            @for (item of stats()!.childrenByCommittee; track item.committeeId) {
+            <tr class="hover:bg-gray-50 transition-colors">
+              <td class="px-4 py-2 text-sm text-gray-800">{{ item.name }}</td>
+              <td class="px-4 py-2 text-sm text-center text-gray-800">{{ item.count }}</td>
+            </tr>
+            } @empty {
+            <tr>
+              <td colspan="2" class="px-4 py-3 text-sm text-center text-gray-500">No hay datos de comités.</td>
+            </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Niños por Salón -->
+      <div class="p-4 bg-white shadow-sm rounded overflow-x-auto">
+        <h3 class="text-sm font-medium text-gray-700 mb-3">Niños por Salón Comunitario</h3>
+        <table class="min-w-full divide-y divide-gray-200">
+          <thead class="bg-gray-50">
+            <tr>
+              <th class="px-4 py-2 text-left text-sm font-medium text-gray-600">Salón</th>
+              <th class="px-4 py-2 text-left text-sm font-medium text-gray-600 hidden sm:table-cell">Comité</th>
+              <th class="px-4 py-2 text-center text-sm font-medium text-gray-600">Niños</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-gray-100">
+            @for (item of stats()!.childrenByCommunityHall; track item.hallId) {
+            <tr class="hover:bg-gray-50 transition-colors">
+              <td class="px-4 py-2 text-sm text-gray-800">{{ item.name }}</td>
+              <td class="px-4 py-2 text-sm text-gray-500 hidden sm:table-cell">{{ item.committeeName }}</td>
+              <td class="px-4 py-2 text-sm text-center text-gray-800">{{ item.count }}</td>
+            </tr>
+            } @empty {
+            <tr>
+              <td colspan="3" class="px-4 py-3 text-sm text-center text-gray-500">No hay datos de salones.</td>
+            </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Señales de Alerta Activas -->
+    <div class="mt-4 p-4 bg-white shadow-sm rounded">
+      <div class="flex items-center justify-between mb-3">
+        <h3 class="text-sm font-medium text-gray-700">Señales de Alerta Activas</h3>
+        <span class="px-2 py-1 bg-red-100 text-red-800 text-xs font-semibold rounded-full">
+          Total: {{ stats()!.activeSignals.total }}
+        </span>
+      </div>
+      <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
+        @for (item of stats()!.activeSignals.byType; track item.signal) {
+        <div class="p-3 border border-red-100 bg-red-50 rounded flex justify-between items-center">
+          <span class="text-sm text-red-700">{{ item.signal }}</span>
+          <span class="text-lg font-bold text-red-800">{{ item.count }}</span>
+        </div>
+        } @empty {
+        <div class="col-span-full p-4 text-sm text-center text-gray-500 border border-dashed border-gray-200 rounded">
+          No hay señales de alerta activas.
+        </div>
+        }
+      </div>
+    </div>
+    }
+
     } @else {
     <div class="p-4 bg-white shadow-sm cursor-pointer" (click)="goTo('/admin/children')">
       <div class="flex justify-between items-center mb-4">

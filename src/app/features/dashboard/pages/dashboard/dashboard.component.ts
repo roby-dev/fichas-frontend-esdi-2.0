@@ -1,7 +1,9 @@
+import { AdminDashboardService } from '@/features/admin/services/admin-dashboard.service';
+import { DashboardStatsResponse } from '@/features/admin/interfaces/dashboard-stats.interface';
+import { ChangeDetectionStrategy, Component, computed, inject, effect, signal } from '@angular/core';
 import { ChildrenState } from '@/features/children/states/children.state';
 import { AdminChildrenState } from '@/features/children/states/admin-children.state';
 import { AuthService } from '@/core/services/auth.service';
-import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
 import { Router } from '@angular/router';
 
 @Component({
@@ -14,9 +16,20 @@ import { Router } from '@angular/router';
 export default class DashboardComponent {
   private readonly router = inject(Router);
   private readonly authService = inject(AuthService);
+  private readonly adminDashboardService = inject(AdminDashboardService);
 
   readonly childrenState = inject(ChildrenState);
   readonly adminChildrenState = inject(AdminChildrenState);
+
+  stats = signal<DashboardStatsResponse | null>(null);
+
+  constructor() {
+    effect(() => {
+      if (this.isAdmin()) {
+        this.adminDashboardService.getStats().subscribe(data => this.stats.set(data));
+      }
+    });
+  }
 
   isAdmin = computed(() => this.authService.isAdmin());
 

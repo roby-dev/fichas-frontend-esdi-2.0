@@ -9,10 +9,6 @@ export const ADMIN_ROUTES: Routes = [
     loadComponent: () => import('@/features/dashboard/pages/dashboard/dashboard.component'),
   },
   {
-    path: 'children',
-    loadComponent: () => import('@/features/children/pages/children/children.component'),
-  },
-  {
     path: 'committee',
     loadComponent: () => import('@/features/committees/pages/committee/committee.component'),
   },

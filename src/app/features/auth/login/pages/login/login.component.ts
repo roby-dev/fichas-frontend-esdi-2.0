@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
-import { Router, RouterLink } from '@angular/router';
+import { Router } from '@angular/router';
 import { AuthService } from '@/core/services/auth.service';
 import { AuthorizationService } from '@/features/auth/services/authorization.service';
 import { catchError, of, tap } from 'rxjs';
@@ -9,7 +9,7 @@ import { form, required, email, minLength } from '@angular/forms/signals';
 @Component({
   standalone: true,
   selector: 'login',
-  imports: [RouterLink, InputComponent],
+  imports: [InputComponent],
   templateUrl: './login.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
@@ -58,9 +58,11 @@ export default class LoginComponent {
         })
       )
       .subscribe({
-        next: () => {
+        next: (res) => {
           this.isLoading.set(false);
-          if (this.authService.isAdmin()) {
+          if (res?.mustChangePassword) {
+            this.router.navigate(['/auth/change-password']);
+          } else if (this.authService.isAdmin()) {
             this.router.navigate(['/admin']);
           } else {
             this.router.navigate(['/user']);
@@ -79,6 +81,3 @@ export default class LoginComponent {
     return this.loginForm.password;
   }
 }
-
-
-

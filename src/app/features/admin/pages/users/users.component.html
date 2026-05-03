@@ -30,6 +30,7 @@
             <th class="px-4 py-2 text-left text-sm font-medium text-gray-600">Correo</th>
             <th class="px-4 py-2 text-left text-sm font-medium text-gray-600">Roles</th>
             <th class="px-4 py-2 text-left text-sm font-medium text-gray-600 hidden lg:table-cell">ID</th>
+            <th class="px-4 py-2"></th>
           </tr>
         </thead>
         <tbody class="divide-y divide-gray-100">
@@ -48,10 +49,21 @@
               </div>
             </td>
             <td class="px-4 py-2 text-xs text-gray-400 font-mono hidden lg:table-cell">{{ user.id }}</td>
+            <td class="px-4 py-2 text-right text-sm font-medium">
+              @if (user.mustChangePassword) {
+                <span class="text-amber-700 bg-amber-50 px-2 py-1 rounded text-xs font-medium">
+                  Clave reseteada
+                </span>
+              } @else {
+                <button (click)="openResetModal(user.id)" class="text-red-600 hover:text-red-900 bg-red-50 px-2 py-1 rounded transition-colors" title="Resetear contraseña">
+                  Resetear clave
+                </button>
+              }
+            </td>
           </tr>
           } @empty {
           <tr>
-            <td colspan="3" class="px-4 py-8 text-sm text-center text-gray-500">
+            <td colspan="4" class="px-4 py-8 text-sm text-center text-gray-500">
               No hay usuarios registrados.
             </td>
           </tr>
@@ -69,21 +81,30 @@
       <table class="min-w-full divide-y divide-gray-200">
         <thead class="bg-gray-50">
           <tr>
-            <th class="px-4 py-2 text-center text-sm font-medium text-gray-600 w-[60px]">ID</th>
             <th class="px-4 py-2 text-left text-sm font-medium text-gray-600">Comité</th>
-            <th class="px-4 py-2 text-left text-sm font-medium text-gray-600">Usuario</th>
+            <th class="px-4 py-2 text-left text-sm font-medium text-gray-600">Usuarios asignados</th>
           </tr>
         </thead>
         <tbody class="divide-y divide-gray-100">
-          @for (membership of adminCommitteeState.committeeMemberships(); track membership.id) {
+          @for (group of groupedByCommittee(); track group.committee.id) {
           <tr class="hover:bg-gray-50 transition-colors">
-            <td class="px-4 py-2 text-sm text-gray-800 text-center">{{ membership.committee.committeeId }}</td>
-            <td class="px-4 py-2 text-sm text-gray-800">{{ membership.committee.name }}</td>
-            <td class="px-4 py-2 text-sm text-gray-500">{{ membership.user.email }}</td>
+            <td class="px-4 py-2 text-sm text-gray-800">
+              <span class="font-mono text-xs text-gray-400 mr-1">#{{ group.committee.committeeId }}</span>
+              {{ group.committee.name }}
+            </td>
+            <td class="px-4 py-2">
+              <div class="flex flex-wrap gap-1.5">
+                @for (user of group.users; track user.id) {
+                <span class="inline-flex items-center bg-blue-50 text-blue-700 text-xs font-medium px-2.5 py-0.5 rounded-full">
+                  {{ user.email }}
+                </span>
+                }
+              </div>
+            </td>
           </tr>
           } @empty {
           <tr>
-            <td colspan="3" class="px-4 py-8 text-sm text-center text-gray-500">
+            <td colspan="2" class="px-4 py-8 text-sm text-center text-gray-500">
               No hay comités asignados.
             </td>
           </tr>
@@ -105,5 +126,11 @@
 <app-modal title="Asignar comité a usuario" size="lg" (closed)="closeAssignModal()">
   <app-assign-committee-form [committees]="adminCommitteeState.committees()" [users]="users()"
     [isLoading]="isAssigning()" (saveAssignCommitteeEvent)="onAssignSubmit($event)" />
+</app-modal>
+}
+
+@if (showResetModal()) {
+<app-modal title="Resetear contraseña" (closed)="closeResetModal()">
+  <app-reset-password-form [isLoading]="isResetting()" (submitted)="onResetSubmit($event)" (cancelled)="closeResetModal()" />
 </app-modal>
 }

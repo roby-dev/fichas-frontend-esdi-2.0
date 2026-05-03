@@ -28,5 +28,9 @@ export class UsersService {
   assignRoles(id: string, roles: string[]): Observable<User> {
     return this.http.patch<User>(`${this.baseUrl}/${id}/roles`, { userId: id, roles });
   }
+
+  resetPassword(id: string, temporaryPassword: string): Observable<{ ok: boolean }> {
+    return this.http.post<{ ok: boolean }>(`${environment.apiUrl}/api/v1/admin/users/${id}/reset-password`, { temporaryPassword });
+  }
 }
 

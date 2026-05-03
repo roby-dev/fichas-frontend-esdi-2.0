@@ -12,9 +12,9 @@ import { MenuItem } from '@/layouts/shared/interfaces/menu-item.interface';
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 import { Router, RouterOutlet } from '@angular/router';
 import { switchMap, finalize, Observable, forkJoin, EMPTY, catchError, throwError } from 'rxjs';
-import { LoadingComponent } from "@/features/shared/components/loading/loading.component";
-import { SidebarComponent } from "@/layouts/shared/sidebar/sidebar.component";
-import { HeaderComponent } from "@/layouts/shared/header/header.component";
+import { LoadingComponent } from '@/features/shared/components/loading/loading.component';
+import { SidebarComponent } from '@/layouts/shared/sidebar/sidebar.component';
+import { HeaderComponent } from '@/layouts/shared/header/header.component';
 import { NgClass } from '@angular/common';
 
 @Component({
@@ -165,7 +165,7 @@ export default class UserLayoutComponent {
 
   loadUser() {
     const decoded = this.authService.getDecodedToken();
-    this.userState.setUser(decoded!.email, decoded!.roles);
+    this.userState.setUser(decoded!.email, decoded!.roles, decoded!.mustChangePassword);
   }
 
   private connectWebSocket() {

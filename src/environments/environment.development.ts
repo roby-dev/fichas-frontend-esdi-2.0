@@ -1,5 +1,5 @@
 export const environment = {
   production: false,
-  apiUrl: 'http://localhost:3000',
-  wsUrl: 'ws://localhost:3000',
+  apiUrl: 'https://fichas-esdi-backend-production.up.railway.app',
+  wsUrl: 'wss://fichas-esdi-backend-production.up.railway.app',
 };

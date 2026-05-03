@@ -1,13 +1,20 @@
 import { SnackbarService } from '@/features/shared/components/snackbar/snackbar.service';
 import type { HttpErrorResponse, HttpInterceptorFn } from '@angular/common/http';
 import { inject } from '@angular/core';
+import { Router } from '@angular/router';
 import { catchError, throwError } from 'rxjs';
 
 export const errorInterceptor: HttpInterceptorFn = (req, next) => {
   const snackbar = inject(SnackbarService);
+  const router = inject(Router);
 
   return next(req).pipe(
     catchError((err: HttpErrorResponse) => {
+      if (err.status === 403 && err.error?.code === 'MUST_CHANGE_PASSWORD') {
+        router.navigate(['/auth/change-password']);
+        return throwError(() => err);
+      }
+
       // normalizar mensaje
       let message = 'Error desconocido';
       try {

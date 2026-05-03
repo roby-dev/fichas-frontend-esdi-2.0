@@ -21,7 +21,11 @@ export class AuthorizationService {
   }
 
   logout(): Observable<void> {
-    return this.http.get<void>(`${this.baseUrl}/logout`);
+    return this.http.post<void>(`${this.baseUrl}/logout`, {});
+  }
+
+  changePassword(request: import('../interfaces/change-password-request.interface').ChangePasswordRequest): Observable<import('../interfaces/change-password-response.interface').ChangePasswordResponse> {
+    return this.http.patch<import('../interfaces/change-password-response.interface').ChangePasswordResponse>(`${this.baseUrl}/change-password`, request);
   }
 }
 

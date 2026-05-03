@@ -3,6 +3,7 @@ import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { environment } from 'src/environments/environment';
 import { Committee } from '../interfaces/committee.interface';
+import { CommitteeMembership } from '../interfaces/committee-membership.interface';
 import { CreateCommitteeRequest } from '../interfaces/create-committee-request.interface';
 
 @Injectable({
@@ -17,8 +18,8 @@ export class CommitteesService {
     return this.http.post<Committee>(`${this.baseUrl}`, request);
   }
 
-  getCommitteesByUser(): Observable<Committee[]> {
-    return this.http.get<Committee[]>(`${this.membershipsUrl}/me`);
+  getCommitteesByUser(): Observable<CommitteeMembership[]> {
+    return this.http.get<CommitteeMembership[]>(`${this.membershipsUrl}/me`);
   }
 
   getCommittees(): Observable<Committee[]> {

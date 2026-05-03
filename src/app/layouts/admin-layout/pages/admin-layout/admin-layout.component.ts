@@ -191,7 +191,7 @@ export default class AdminLayoutComponent implements OnInit, OnDestroy {
 
   loadUser() {
     const decoded = this.authService.getDecodedToken();
-    this.userState.setUser(decoded!.email, decoded!.roles);
+    this.userState.setUser(decoded!.email, decoded!.roles, decoded!.mustChangePassword);
   }
 
   private connectWebSocket() {

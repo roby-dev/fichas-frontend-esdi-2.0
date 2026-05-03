@@ -1,17 +1,17 @@
 <h2 class="text-lg font-semibold mb-4">Seleccione Comité</h2>
 
 <ul class="space-y-2">
-  @for(committee of committeeState.userCommittees(); track committee.id) {
+  @for(membership of committeeState.userCommittees(); track membership.id) {
   <li
-    (click)="selectCommittee(committee)"
+    (click)="selectCommittee(membership)"
     class="cursor-pointer px-4 py-2 rounded-lg border transition"
     [ngClass]="{
       'bg-blue-500 text-white font-semibold':
-        committeeState.committee() && committeeState.committee()!.id === committee.id
+        committeeState.committee() && committeeState.committee()!.id === membership.committee.id
     }"
   >
-    {{ committee.name }}
-    @if(committeeState.committee() && committeeState.committee()!.id === committee.id) {
+    {{ membership.committee.name }}
+    @if(committeeState.committee() && committeeState.committee()!.id === membership.committee.id) {
     <span class="text-sm text-white"> (Seleccionado)</span>
     }
   </li>

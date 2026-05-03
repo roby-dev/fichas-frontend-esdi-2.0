@@ -12,8 +12,8 @@ export class UserState {
   users = signal<User[]>([]);
   user = signal<User | null>(null);
 
-  setUser(email: string, roles: string[]) {
-    const user: User = { email, roles };
+  setUser(email: string, roles: string[], mustChangePassword?: boolean) {
+    const user: User = { email, roles, mustChangePassword };
     this.user.set(user);
   }
 

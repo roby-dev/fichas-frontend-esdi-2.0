@@ -1,6 +1,7 @@
 import {
   ChangeDetectionStrategy,
   Component,
+  computed,
   HostListener,
   inject,
   OnInit,
@@ -17,11 +18,12 @@ import { AdminCommitteeState } from '@/features/committees/states/admin-committe
 import { CommitteeState } from '@/features/committees/states/committee.state';
 import { AssignCommitteeFormComponent } from '@/features/committees/pages/components/assign-committee/assign-committee-form.component';
 import { AssignCommitteeRequest } from '@/features/committees/interfaces/assign-committee-request.interface';
+import { ResetPasswordFormComponent } from './components/reset-password-form/reset-password-form.component';
 
 @Component({
   selector: 'app-users',
   standalone: true,
-  imports: [ModalComponent, UserFormComponent, AssignCommitteeFormComponent],
+  imports: [ModalComponent, UserFormComponent, AssignCommitteeFormComponent, ResetPasswordFormComponent],
   templateUrl: './users.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
@@ -36,10 +38,27 @@ export default class UsersComponent implements OnInit {
 
   users = this.userState.users;
 
+  groupedByCommittee = computed(() => {
+    const memberships = this.adminCommitteeState.committeeMemberships();
+    const map = new Map<string, { committee: { id: string; committeeId: string; name: string }; users: { id: string; email: string }[] }>();
+    for (const m of memberships) {
+      const key = m.committee.id;
+      if (!map.has(key)) {
+        map.set(key, { committee: m.committee, users: [] });
+      }
+      map.get(key)!.users.push({ id: m.user.id, email: m.user.email });
+    }
+    return [...map.values()];
+  });
+
   showCreateModal = signal(false);
   showAssignModal = signal(false);
   isCreating = signal(false);
   isAssigning = signal(false);
+
+  showResetModal = signal(false);
+  isResetting = signal(false);
+  selectedUserId = signal<string | null>(null);
 
   ngOnInit(): void {
     this.adminCommitteeState.loadCommitteeMemberships().subscribe();
@@ -50,6 +69,16 @@ export default class UsersComponent implements OnInit {
 
   openAssignModal(): void { this.showAssignModal.set(true); }
   closeAssignModal(): void { this.showAssignModal.set(false); }
+
+  openResetModal(userId: string | undefined): void {
+    if (!userId) return;
+    this.selectedUserId.set(userId);
+    this.showResetModal.set(true);
+  }
+  closeResetModal(): void {
+    this.selectedUserId.set(null);
+    this.showResetModal.set(false);
+  }
 
   onCreateSubmit(value: UserFormValue): void {
     this.isCreating.set(true);
@@ -97,9 +126,28 @@ export default class UsersComponent implements OnInit {
       });
   }
 
+  onResetSubmit(value: { temporaryPassword: string }): void {
+    const userId = this.selectedUserId();
+    if (!userId) return;
+
+    this.isResetting.set(true);
+    this.usersService.resetPassword(userId, value.temporaryPassword).subscribe({
+      next: () => {
+        this.isResetting.set(false);
+        this.closeResetModal();
+        this.toastService.success('Contraseña reseteada. El usuario deberá cambiarla al ingresar.');
+      },
+      error: () => {
+        this.isResetting.set(false);
+        this.toastService.error('No se pudo resetear la contraseña');
+      }
+    });
+  }
+
   @HostListener('window:keydown.escape')
   onEscape(): void {
     if (this.showCreateModal()) this.closeCreateModal();
     if (this.showAssignModal()) this.closeAssignModal();
+    if (this.showResetModal()) this.closeResetModal();
   }
 }

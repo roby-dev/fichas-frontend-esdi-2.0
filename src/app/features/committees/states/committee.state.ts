@@ -1,5 +1,6 @@
 import { inject, Injectable, signal } from '@angular/core';
 import { Committee } from '../interfaces/committee.interface';
+import { CommitteeMembership } from '../interfaces/committee-membership.interface';
 import { COMMITTEE_CODE_KEY, COMMITTEE_ID_KEY, COMMITTEE_NAME_KEY } from '@/core/constants/constants';
 import { CommitteesService } from '../services/committees.service';
 import { tap } from 'rxjs';
@@ -8,11 +9,11 @@ import { tap } from 'rxjs';
 export class CommitteeState {
   private readonly committeeService = inject(CommitteesService);
 
-  userCommittees = signal<Committee[]>([]);
+  userCommittees = signal<CommitteeMembership[]>([]);
   adminCommittees = signal<Committee[]>([]);
-  committee = signal<Committee | null>(null);
+  committee = signal<CommitteeMembership['committee'] | null>(null);
 
-  setCommittee(committee: Committee) {
+  setCommittee(committee: CommitteeMembership['committee']) {
     this.committee.set(committee);
     localStorage.setItem(COMMITTEE_ID_KEY, committee.id);
     localStorage.setItem(COMMITTEE_NAME_KEY, committee.name);

@@ -6,9 +6,10 @@ export const AUTH_ROUTES: Routes = [
     loadComponent: () => import('@/features/auth/login/pages/login/login.component'),
   },
   {
-    path: 'register',
-    loadComponent: () => import('@/features/auth/register/pages/register/register.component'),
+    path: 'change-password',
+    loadComponent: () => import('@/features/auth/change-password/pages/change-password/change-password.component'),
   },
+
   {
     path: '',
     redirectTo: 'login',

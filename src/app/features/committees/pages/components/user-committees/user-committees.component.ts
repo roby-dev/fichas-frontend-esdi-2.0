@@ -1,7 +1,7 @@
 import { ChildrenState } from '@/features/children/states/children.state';
 import { CommitteeState } from '@/features/committees/states/committee.state';
 import { CommunityHallState } from '@/features/community-halls/states/community-hall.state.ts';
-import { Committee } from '@/features/committees/interfaces/committee.interface';
+import { CommitteeMembership } from '@/features/committees/interfaces/committee-membership.interface';
 import { NgClass } from '@angular/common';
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { Router } from '@angular/router';
@@ -21,8 +21,8 @@ export class UserCommitteesComponent {
   readonly communityHallState = inject(CommunityHallState);
   readonly childrenState = inject(ChildrenState);
 
-  selectCommittee(committee: Committee) {
-    this.committeeState.setCommittee(committee);
+  selectCommittee(membership: CommitteeMembership) {
+    this.committeeState.setCommittee(membership.committee);
     forkJoin([
       this.communityHallState.loadCommunityHalls(),
       this.childrenState.loadChildren(),

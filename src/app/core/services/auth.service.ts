@@ -29,7 +29,7 @@ export class AuthService {
     localStorage.setItem(REFRESH_TOKEN_KEY, refresh);
   }
 
-  getDecodedToken(): { email: string, roles: string[], exp: number } | null {
+  getDecodedToken(): { email: string; roles: string[]; exp: number; mustChangePassword?: boolean } | null {
     const token = this.getToken();
     if (!token) return null;
 

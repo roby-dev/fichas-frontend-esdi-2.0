@@ -3,7 +3,7 @@ import { ACCESS_TOKEN_KEY, COMMITTEE_ID_KEY, COMMITTEE_NAME_KEY, REFRESH_TOKEN_K
 import { ChangeDetectionStrategy, Component, computed, inject, input, output, signal } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { UserState } from '@/features/users/states/user.state';
-import { CommunityHallState } from '@/features/community-halls/states/community-hall.state.ts';
+import { CommunityHallState } from '@/features/community-halls/states/community-hall.state';
 import { ChildrenState } from '@/features/children/states/children.state';
 import { AuthService } from '@/core/services/auth.service';
 import { AdminCommitteeState } from '@/features/committees/states/admin-committee.state';
@@ -55,10 +55,10 @@ export class HeaderComponent {
     localStorage.removeItem(REFRESH_TOKEN_KEY);
     this.committeeState.clearCommittee();
     this.userState.clearUser();
-    this.userState.clearUsers();
-    this.childrenState.clearChildren();
-    this.communityHallState.clearCommunityHalls();
-    this.adminComitteeState.clearCommittee();
+    this.userState.clear();
+    this.childrenState.clear();
+    this.communityHallState.clear();
+    this.adminComitteeState.clear();
     this.router.navigate(['/auth']);
   }
 }

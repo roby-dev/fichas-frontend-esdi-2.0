@@ -1,6 +1,6 @@
 import { ChildrenState } from '@/features/children/states/children.state';
 import { CommitteeState } from '@/features/committees/states/committee.state';
-import { CommunityHallState } from '@/features/community-halls/states/community-hall.state.ts';
+import { CommunityHallState } from '@/features/community-halls/states/community-hall.state';
 import { CommitteeMembership } from '@/features/committees/interfaces/committee-membership.interface';
 import { NgClass } from '@angular/common';
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';

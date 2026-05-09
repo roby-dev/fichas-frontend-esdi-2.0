@@ -1,4 +1,4 @@
-import { CommunityHallState } from '@/features/community-halls/states/community-hall.state.ts';
+import { CommunityHallState } from '@/features/community-halls/states/community-hall.state';
 import { ChangeDetectionStrategy, Component, inject, OnDestroy, OnInit, signal } from '@angular/core';
 import { Router, RouterOutlet } from '@angular/router';
 import { NgClass } from '@angular/common';

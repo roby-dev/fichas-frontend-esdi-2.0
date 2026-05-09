@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
-import { CommunityHallState } from '@/features/community-halls/states/community-hall.state.ts';
+import { CommunityHallState } from '@/features/community-halls/states/community-hall.state';
 
 @Component({
   standalone: true,

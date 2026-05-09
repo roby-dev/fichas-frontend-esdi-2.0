@@ -8,7 +8,7 @@ import {
   computed,
 } from '@angular/core';
 import { ChildCardComponent } from '../../components/child-card/child-card.component';
-import { CommunityHallState } from '@/features/community-halls/states/community-hall.state.ts';
+import { CommunityHallState } from '@/features/community-halls/states/community-hall.state';
 import { ChildrenState } from '../../states/children.state';
 import { ChildFormComponent } from '../../components/child-form/child-form/child-form.component';
 import { CreateUpdateChildRequest } from '../../interfaces/create-update-child-request.interface';

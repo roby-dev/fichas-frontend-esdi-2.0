@@ -5,7 +5,7 @@ import { ChildrenState } from '@/features/children/states/children.state';
 import { CommitteesService } from '@/features/committees/services/committees.service';
 import { AdminCommitteeState } from '@/features/committees/states/admin-committee.state';
 import { CommitteeState } from '@/features/committees/states/committee.state';
-import { CommunityHallState } from '@/features/community-halls/states/community-hall.state.ts';
+import { CommunityHallState } from '@/features/community-halls/states/community-hall.state';
 import { UserState } from '@/features/users/states/user.state';
 import { HeaderItem } from '@/layouts/shared/interfaces/header-item.interface';
 import { MenuItem } from '@/layouts/shared/interfaces/menu-item.interface';

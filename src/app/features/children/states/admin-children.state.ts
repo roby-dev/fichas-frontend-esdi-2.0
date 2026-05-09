@@ -8,19 +8,27 @@ export class AdminChildrenState {
   private readonly childrenService = inject(ChildrenService);
 
   groupedByUser = signal<UserWithChildren[]>([]);
+  isLoading = signal(false);
+  error = signal<string | null>(null);
 
-  clearGroupedByUser() {
+  clear() {
     this.groupedByUser.set([]);
+    this.isLoading.set(false);
+    this.error.set(null);
   }
 
   loadGroupedByUser() {
+    this.isLoading.set(true);
+    this.error.set(null);
     return this.childrenService.getChildrenGroupedByUser().pipe(
       tap({
         next: (res) => {
           this.groupedByUser.set(res);
+          this.isLoading.set(false);
         },
         error: (err) => {
-          console.error(err);
+          this.error.set(err?.message ?? 'Error al cargar los niños agrupados');
+          this.isLoading.set(false);
         },
       })
     );

@@ -136,6 +136,7 @@ export default class UsersComponent implements OnInit {
         this.isResetting.set(false);
         this.closeResetModal();
         this.toastService.success('Contraseña reseteada. El usuario deberá cambiarla al ingresar.');
+        this.userState.loadUsers().subscribe();
       },
       error: () => {
         this.isResetting.set(false);

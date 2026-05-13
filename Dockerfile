@@ -4,7 +4,7 @@ FROM node:22-alpine AS build
 WORKDIR /app
 
 # Instalar pnpm (tu packageManager definido en angular.json)
-RUN npm install -g pnpm
+RUN npm install -g pnpm@11
 
 # Copiar archivos de dependencias
 COPY package.json pnpm-lock.yaml ./

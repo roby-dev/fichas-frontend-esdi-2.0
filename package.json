@@ -25,6 +25,16 @@
     "tailwindcss": "^4.1.12",
     "tslib": "^2.3.0"
   },
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "@parcel/watcher",
+      "@tailwindcss/oxide",
+      "core-js",
+      "esbuild",
+      "lmdb",
+      "msgpackr-extract"
+    ]
+  },
   "devDependencies": {
     "@angular/build": "^21.2.8",
     "@angular/cli": "^21.2.8",

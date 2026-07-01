@@ -22,6 +22,11 @@ export const USER_ROUTES: Routes = [
     loadComponent: () => import('@/features/community-halls/pages/community-halls/community-halls.component'),
   },
   {
+    path: 'caregiver-attendance',
+    canActivate: [committeeGuard],
+    loadComponent: () => import('@/features/caregiver-attendance/pages/caregiver-attendance/caregiver-attendance.component'),
+  },
+  {
     path: 'alert-signals',
     canActivate: [committeeGuard],
     loadComponent: () => import('@/features/alert-signals/pages/alert-signals/alert-signals.component'),

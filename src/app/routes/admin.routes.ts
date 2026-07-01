@@ -17,6 +17,10 @@ export const ADMIN_ROUTES: Routes = [
     loadComponent: () => import('@/features/community-halls/pages/community-halls/community-halls.component'),
   },
   {
+    path: 'caregiver-attendance',
+    loadComponent: () => import('@/features/caregiver-attendance/pages/caregiver-attendance/caregiver-attendance.component'),
+  },
+  {
     path: 'unauthorized',
     loadComponent: () => import('@/features/unauthorized/pages/unauthorized/unauthorized.component'),
   },

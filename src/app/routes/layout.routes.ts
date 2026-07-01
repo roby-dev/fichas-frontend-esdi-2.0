@@ -22,6 +22,11 @@ export const LAYOUT_ROUTES: Routes = [
     loadChildren: () => import('./user.routes').then((m) => m.USER_ROUTES),
   },
   {
+    path: 'caregiver-attendance/self-service',
+    loadComponent: () =>
+      import('@/features/caregiver-attendance/pages/self-service-caregiver-attendance/self-service-caregiver-attendance.component'),
+  },
+  {
     path: '',
     loadComponent: () => import('@/layouts/empty-layout/pages/empty-layout/empty-layout.component'),
     canActivate: [redirectGuard],

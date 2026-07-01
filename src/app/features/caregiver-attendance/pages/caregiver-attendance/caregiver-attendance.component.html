@@ -1,0 +1,7 @@
+<div class="p-0 sm:p-4">
+  @if (authService.isAdmin()) {
+    <app-admin-caregiver-attendance />
+  } @else {
+    <app-user-caregiver-attendance />
+  }
+</div>

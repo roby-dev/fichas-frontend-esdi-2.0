@@ -1,0 +1,43 @@
+schema: spec-driven
+
+context: |
+  Project: fichas-frontend-esdi-2.0 (Angular SPA for CUNAMAS/MIDIS ESDI program)
+  Stack: Angular 21.2 (standalone, zoneless), Tailwind CSS v4 + PostCSS, TypeScript 5.9 strict, pnpm
+  Real-time: ngx-socket-io (WebSocket); PWA via @angular/service-worker
+  State: Service + Signals (no NgRx); 7 feature states; CommitteeState persists to localStorage
+  Backend sibling: fichas-esdi-backend (NestJS + MongoDB), Swagger spec, /api/v1/
+  Architecture: core/ (guards, interceptors, services) + features/ (domain modules) + layouts/ + routes/
+  Conventions: @/ path alias, OnPush, single quotes, 2-space, conventional commits, Spanish error messages
+  Testing: Karma + Jasmine (ng test), tests pending; only app.component.spec.ts skeleton exists
+
+strict_tdd: true
+
+rules:
+  proposal:
+    - Include rollback plan for changes to auth flow, state persistence, or routing guards
+    - Note affected backend endpoints when change crosses the NestJS API boundary
+  specs:
+    - Use Given/When/Then for scenarios
+    - Use RFC 2119 keywords (MUST, SHALL, SHOULD, MAY)
+    - Reference real entities (Child, Committee, CommitteeMembership, CommunityHall, AlertChild)
+  design:
+    - Respect Service + Signals state pattern; no external state library
+    - Document signal dependency changes (e.g., ChildrenState -> CommitteeState)
+    - Keep guards/interceptors functional (CanActivateFn, HttpInterceptorFn)
+  tasks:
+    - Group by phase, use hierarchical numbering
+    - Keep tasks completable in one session
+    - Separate service/state work from component/template work
+  apply:
+    - Follow existing code patterns (standalone components, OnPush, providedIn: 'root' services)
+    - Keep HTTP calls in dedicated services, never in components
+    - Error messages in Spanish
+    tdd: true
+    test_command: "pnpm test -- --watch=false --browsers=ChromeHeadless"
+  verify:
+    test_command: "pnpm test -- --watch=false --browsers=ChromeHeadless"
+    build_command: "pnpm build"
+    coverage_threshold: 0
+  archive:
+    - Warn before merging destructive deltas to main specs
+    - Confirm committee/child migration deltas don't drop persisted localStorage keys

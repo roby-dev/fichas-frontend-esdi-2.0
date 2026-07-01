@@ -1,0 +1,7 @@
+schemaName: sdd-change-state
+change: caregiver-attendance-retire-action
+artifactStore: openspec
+applyState: all_done
+tasksComplete: 8
+tasksTotal: 8
+updatedAt: 2026-07-01

@@ -43,7 +43,15 @@ export class AuthService {
   }
 
   isAdmin(): boolean {
+    return this.hasRole('admin');
+  }
+
+  hasRole(role: string): boolean {
     const decoded = this.getDecodedToken();
-    return decoded?.roles.includes('admin') ?? false;
+    return decoded?.roles.includes(role) ?? false;
+  }
+
+  isTechnicalCompanion(): boolean {
+    return this.hasRole('AT');
   }
 }

@@ -1,0 +1,54 @@
+<form (submit)="onSubmit($event)" class="space-y-4 p-4">
+  <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+    <div>
+      <label class="block text-sm font-medium text-gray-700 mb-1">Tipo de documento</label>
+      <select
+        [formField]="documentTypeControl"
+        class="mt-1 block w-full rounded-lg border border-gray-300 px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors">
+        <option value="DNI">DNI</option>
+        <option value="CE">Carné de extranjería</option>
+        <option value="PASAPORTE">Pasaporte</option>
+      </select>
+    </div>
+
+    <app-input
+      type="text"
+      label="Número de documento"
+      [control]="documentNumberControl"
+    ></app-input>
+  </div>
+
+  <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+    <app-input
+      type="text"
+      label="Nombres"
+      [control]="firstNameControl"
+    ></app-input>
+
+    <app-input
+      type="text"
+      label="Apellidos"
+      [control]="lastNameControl"
+    ></app-input>
+  </div>
+
+  <app-input
+    type="text"
+    label="Teléfono"
+    [control]="phoneControl"
+  ></app-input>
+
+  <app-input
+    type="date"
+    label="Fecha de inicio"
+    [control]="startDateControl"
+  ></app-input>
+
+  <div class="flex justify-end pt-2">
+    <app-button
+      [label]="isLoading() ? 'Guardando...' : 'Guardar'"
+      [disabled]="isLoading() || form().invalid()"
+      type="submit"
+    ></app-button>
+  </div>
+</form>

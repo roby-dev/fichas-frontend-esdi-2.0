@@ -1,0 +1,25 @@
+<form class="space-y-4 p-4" (submit)="onSubmit($event)">
+  <label class="block text-sm text-gray-700">
+    Local comunal destino
+    <select class="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2 text-sm" [value]="targetHallId()" (change)="targetHallId.set($any($event.target).value)">
+      <option value="">Selecciona un local</option>
+      @for (hall of halls(); track hall.id) {
+        <option [value]="hall.id">{{ hall.name }}</option>
+      }
+    </select>
+  </label>
+
+  <label class="block text-sm text-gray-700">
+    Vigente desde
+    <input type="date" class="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2 text-sm" [value]="validFrom()" (input)="validFrom.set($any($event.target).value)" />
+  </label>
+
+  <label class="block text-sm text-gray-700">
+    Nombre de la copia
+    <input type="text" class="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2 text-sm" [value]="name()" (input)="name.set($any($event.target).value)" />
+  </label>
+
+  <div class="flex justify-end">
+    <app-button label="Copiar horario" type="submit" [disabled]="isInvalid() || isLoading()" [isLoading]="isLoading()" />
+  </div>
+</form>

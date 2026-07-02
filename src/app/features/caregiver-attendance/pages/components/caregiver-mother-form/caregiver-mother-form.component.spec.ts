@@ -15,6 +15,16 @@ describe('CaregiverMotherFormComponent', () => {
     endDate: '2026-12-31',
     status: 'retired',
   };
+  const hall = { id: 'hall-1', name: 'Local Las Flores', localId: 'LC-1', committeeRef: 'committee-1', committee: {} } as never;
+
+  function todayString(): string {
+    const today = new Date();
+    const year = today.getFullYear();
+    const month = String(today.getMonth() + 1).padStart(2, '0');
+    const day = String(today.getDate()).padStart(2, '0');
+
+    return `${year}-${month}-${day}`;
+  }
 
   afterEach(() => TestBed.resetTestingModule());
 
@@ -27,14 +37,25 @@ describe('CaregiverMotherFormComponent', () => {
     const dateInputs = fixture.nativeElement.querySelectorAll('input[type="date"]');
     expect(dateInputs.length).toBe(1);
     expect((fixture.nativeElement.textContent ?? '')).toContain('Fecha de inicio');
+    expect((fixture.nativeElement.textContent ?? '')).toContain('Local comunal');
     expect((fixture.nativeElement.textContent ?? '')).not.toContain('Fecha de fin');
     expect((fixture.nativeElement.textContent ?? '')).not.toContain('Estado');
+  });
+
+  it('defaults a new caregiver start date to today', async () => {
+    await TestBed.configureTestingModule({ imports: [CaregiverMotherFormComponent] }).compileComponents();
+    const fixture = TestBed.createComponent(CaregiverMotherFormComponent);
+    fixture.componentRef.setInput('isLoading', false);
+    fixture.detectChanges();
+
+    expect(fixture.componentInstance.caregiverModel().startDate).toBe(todayString());
   });
 
   it('emits only registration fields for a new caregiver', async () => {
     await TestBed.configureTestingModule({ imports: [CaregiverMotherFormComponent] }).compileComponents();
     const fixture = TestBed.createComponent(CaregiverMotherFormComponent);
     fixture.componentRef.setInput('isLoading', false);
+    fixture.componentRef.setInput('halls', [hall]);
     const saved = jasmine.createSpy('saved');
     fixture.componentInstance.saveCaregiverEvent.subscribe(saved);
     fixture.detectChanges();
@@ -46,6 +67,7 @@ describe('CaregiverMotherFormComponent', () => {
       lastName: 'Torres',
       phone: '988776655',
       startDate: '2026-07-03',
+      communityHallId: 'hall-1',
     });
     fixture.componentInstance.onSubmit(new Event('submit'));
 
@@ -56,6 +78,7 @@ describe('CaregiverMotherFormComponent', () => {
       lastName: 'Torres',
       phone: '988776655',
       startDate: '2026-07-03',
+      communityHallId: 'hall-1',
     });
     expect(saved.calls.mostRecent().args[0].startDate instanceof Date).toBeFalse();
     expect(Object.prototype.hasOwnProperty.call(saved.calls.mostRecent().args[0], 'status')).toBeFalse();
@@ -71,6 +94,7 @@ describe('CaregiverMotherFormComponent', () => {
     fixture.componentInstance.saveCaregiverEvent.subscribe(saved);
     fixture.detectChanges();
 
+    expect((fixture.nativeElement.textContent ?? '')).not.toContain('Local comunal');
     fixture.componentInstance.onSubmit(new Event('submit'));
 
     expect(saved).toHaveBeenCalledOnceWith({

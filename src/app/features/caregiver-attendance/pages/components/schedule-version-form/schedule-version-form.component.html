@@ -1,0 +1,65 @@
+<form class="space-y-4" (submit)="onSubmit($event)">
+  <div class="flex flex-wrap gap-1 border-b border-gray-200">
+    @for (tab of tabs; track tab.id) {
+      <button
+        type="button"
+        class="-mb-px border-b-2 px-3 py-2 text-sm font-medium transition-colors cursor-pointer"
+        [class.border-blue-500]="activeTab() === tab.id"
+        [class.text-blue-600]="activeTab() === tab.id"
+        [class.border-transparent]="activeTab() !== tab.id"
+        [class.text-gray-500]="activeTab() !== tab.id"
+        [class.hover:text-gray-700]="activeTab() !== tab.id"
+        (click)="setTab(tab.id)"
+      >
+        {{ tab.label }}
+      </button>
+    }
+  </div>
+
+  @if (activeTab() === 'general') {
+    <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+      <p class="rounded-lg bg-blue-50 px-3 py-2 text-xs text-blue-700 sm:col-span-2">
+        Define un nombre claro para identificar el horario. La fecha "Aplica desde" permite conservar el historial: los reportes anteriores usarán el horario que correspondía en ese momento.
+      </p>
+      <label class="block text-sm text-gray-700 sm:col-span-2">
+        Local comunal
+        <select class="mt-1 w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm" [value]="selectedHallId()" (change)="selectedHallId.set($any($event.target).value)">
+          <option value="">Selecciona un local comunal</option>
+          @for (hall of halls(); track hall.id) {
+            <option [value]="hall.id">{{ hall.name }}</option>
+          }
+        </select>
+      </label>
+      <label class="block text-sm text-gray-700">
+        Nombre del horario
+        <input type="text" placeholder="ej. Horario regular 2026" class="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2 text-sm" [value]="name()" (input)="name.set($any($event.target).value)" />
+      </label>
+      <label class="block text-sm text-gray-700">
+        Aplica desde
+        <input type="date" class="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2 text-sm" [value]="validFrom()" (input)="validFrom.set($any($event.target).value)" />
+        <span class="text-xs text-gray-400">Si creás un nuevo horario, el anterior se mantiene para reportes históricos hasta el día previo.</span>
+      </label>
+    </div>
+  }
+
+  @if (activeTab() === 'bloques') {
+    <app-schedule-blocks-editor [blocks]="blocks()" (blocksChange)="updateBlocks($event)" />
+  }
+
+  @if (activeTab() === 'dias') {
+    <app-schedule-day-rules-editor [dayRules]="dayRules()" [blocks]="blocks()" (dayRulesChange)="dayRules.set($event)" />
+  }
+
+  @if (activeTab() === 'especiales') {
+    <app-schedule-special-days-editor [specialDays]="specialDays()" [blocks]="blocks()" (specialDaysChange)="specialDays.set($event)" />
+  }
+
+  @if (submitError()) {
+    <p class="text-sm text-red-600" role="alert">{{ submitError() }}</p>
+  }
+
+  <div class="flex items-center justify-between gap-3 border-t border-gray-200 pt-3">
+    <p class="text-xs text-gray-400">Pestaña: {{ tabs[activeTab() === 'general' ? 0 : activeTab() === 'bloques' ? 1 : activeTab() === 'dias' ? 2 : 3].label }}</p>
+    <app-button label="Guardar horario" type="submit" [disabled]="isInvalid() || scheduleState.isSaving()" [isLoading]="scheduleState.isSaving()" />
+  </div>
+</form>

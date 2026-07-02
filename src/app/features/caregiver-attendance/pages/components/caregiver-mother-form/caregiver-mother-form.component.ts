@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy, Component, OnInit, input, output, signal } from '@angular/core';
 import { FormField, form, required } from '@angular/forms/signals';
+import { CommunityHall } from '@/features/community-halls/interfaces/community.interface';
 import {
   CaregiverMotherResponse,
   CreateCaregiverMotherRequest,
@@ -17,6 +18,7 @@ interface CaregiverFormModel {
   lastName: string;
   phone: string;
   startDate: string;
+  communityHallId: string;
 }
 
 @Component({
@@ -29,6 +31,7 @@ interface CaregiverFormModel {
 export class CaregiverMotherFormComponent implements OnInit {
   isLoading = input.required<boolean>();
   caregiver = input<CaregiverMotherResponse | null>(null);
+  halls = input<CommunityHall[]>([]);
   saveCaregiverEvent = output<CaregiverSaveRequest>();
 
   caregiverModel = signal<CaregiverFormModel>({
@@ -37,7 +40,8 @@ export class CaregiverMotherFormComponent implements OnInit {
     firstName: '',
     lastName: '',
     phone: '',
-    startDate: '',
+    startDate: this.todayString(),
+    communityHallId: '',
   });
 
   form = form(this.caregiverModel, (schemaPath) => {
@@ -45,6 +49,7 @@ export class CaregiverMotherFormComponent implements OnInit {
     required(schemaPath.firstName!, { message: 'Nombres requeridos' });
     required(schemaPath.lastName!, { message: 'Apellidos requeridos' });
     required(schemaPath.startDate!, { message: 'Fecha de inicio requerida' });
+    required(schemaPath.communityHallId!, { message: 'Selecciona un local comunal.' });
   });
 
   ngOnInit(): void {
@@ -58,6 +63,7 @@ export class CaregiverMotherFormComponent implements OnInit {
       lastName: caregiver.lastName,
       phone: caregiver.phone ?? '',
       startDate: this.dateInputValue(caregiver.startDate),
+      communityHallId: 'existing-assignment',
     });
   }
 
@@ -67,13 +73,18 @@ export class CaregiverMotherFormComponent implements OnInit {
   get lastNameControl() { return this.form.lastName!; }
   get phoneControl() { return this.form.phone!; }
   get startDateControl() { return this.form.startDate!; }
+  get communityHallIdControl() { return this.form.communityHallId!; }
+
+  isCreateMode(): boolean {
+    return !this.caregiver();
+  }
 
   onSubmit(event: Event): void {
     event.preventDefault();
     if (this.form().invalid()) return;
 
     const value = this.caregiverModel();
-    const request: CaregiverSaveRequest = {
+    const request: UpdateCaregiverMotherRequest = {
       documentType: this.optional(value.documentType),
       documentNumber: value.documentNumber,
       firstName: value.firstName,
@@ -82,11 +93,28 @@ export class CaregiverMotherFormComponent implements OnInit {
       startDate: value.startDate,
     };
 
+    if (this.isCreateMode()) {
+      this.saveCaregiverEvent.emit({
+        ...request,
+        communityHallId: value.communityHallId,
+      } as CreateCaregiverMotherRequest);
+      return;
+    }
+
     this.saveCaregiverEvent.emit(request);
   }
 
   private dateInputValue(value: string | null | undefined): string {
     return value?.slice(0, 10) ?? '';
+  }
+
+  private todayString(): string {
+    const today = new Date();
+    const year = today.getFullYear();
+    const month = String(today.getMonth() + 1).padStart(2, '0');
+    const day = String(today.getDate()).padStart(2, '0');
+
+    return `${year}-${month}-${day}`;
   }
 
   private optional(value: string): string | undefined {

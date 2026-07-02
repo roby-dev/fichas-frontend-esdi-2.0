@@ -1,0 +1,39 @@
+<section class="space-y-3">
+  <div>
+    <h3 class="text-sm font-semibold text-gray-700">Días de la semana</h3>
+    <p class="mt-1 text-xs text-gray-500">Marca qué días se atiende y qué bloques aplican cada día.</p>
+  </div>
+
+  <div class="flex flex-wrap items-center gap-2 rounded-lg bg-gray-50 p-2">
+    <span class="text-xs font-medium text-gray-500">Plantillas:</span>
+    <button type="button" class="rounded-md border border-gray-300 bg-white px-2 py-1 text-xs text-gray-700 hover:bg-gray-100 cursor-pointer" (click)="applyPreset('weekdays')">Lunes a Viernes</button>
+    <button type="button" class="rounded-md border border-gray-300 bg-white px-2 py-1 text-xs text-gray-700 hover:bg-gray-100 cursor-pointer" (click)="applyPreset('all')">Todos los días</button>
+    <button type="button" class="rounded-md border border-gray-300 bg-white px-2 py-1 text-xs text-gray-700 hover:bg-gray-100 cursor-pointer" (click)="applyPreset('none')">Ninguno</button>
+    <span class="mx-1 text-gray-300">|</span>
+    <button type="button" class="rounded-md border border-blue-300 bg-blue-50 px-2 py-1 text-xs text-blue-700 hover:bg-blue-100 cursor-pointer" (click)="replicateBlocksToAllWorkingDays()" [disabled]="blockIds().length === 0">
+      Replicar bloques a días laborables
+    </button>
+  </div>
+
+  <div class="grid grid-cols-1 gap-3 sm:grid-cols-2">
+    @for (rule of dayRules(); track rule.dayOfWeek; let index = $index) {
+      <div class="rounded-lg border border-gray-200 p-3" [class.opacity-50]="!rule.isWorkingDay">
+        <label class="flex items-center gap-2 text-sm font-medium text-gray-700">
+          <input type="checkbox" [checked]="rule.isWorkingDay" (change)="updateRule(index, { isWorkingDay: $any($event.target).checked })" />
+          {{ dayNames[rule.dayOfWeek] }}
+        </label>
+        @if (rule.isWorkingDay) {
+          <label class="mt-2 block text-sm text-gray-700">
+            Bloques del día
+            <select multiple class="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2 text-sm" (change)="updateRule(index, { blockIds: selectedBlockIds($any($event.target)) })">
+              @for (block of blocks(); track block.id) {
+                <option [value]="block.id" [selected]="rule.blockIds.includes(block.id ?? '')">{{ block.name || 'Bloque sin nombre' }}</option>
+              }
+            </select>
+            <span class="text-xs text-gray-400">Mantén Ctrl/Cmd para seleccionar varios.</span>
+          </label>
+        }
+      </div>
+    }
+  </div>
+</section>

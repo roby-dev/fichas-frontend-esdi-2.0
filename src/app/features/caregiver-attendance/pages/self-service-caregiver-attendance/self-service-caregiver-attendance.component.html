@@ -1,7 +1,59 @@
-<main class="min-h-screen bg-slate-50 p-6">
-  <section class="mx-auto max-w-xl rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
-    <p class="text-sm font-semibold uppercase tracking-wide text-slate-500">Madres cuidadoras</p>
-    <h1 class="mt-2 text-2xl font-bold text-slate-900">Auto registro de asistencia MC</h1>
-    <p class="mt-3 text-slate-600">Este acceso público queda preparado para el auto marcado.</p>
+<main class="min-h-screen bg-gradient-to-br from-blue-50 via-white to-slate-100 px-4 py-8 text-slate-900 sm:px-6">
+  <section class="mx-auto grid min-h-[calc(100vh-4rem)] max-w-5xl items-center">
+    <div class="grid gap-8 rounded-3xl border border-blue-100 bg-white/95 p-6 shadow-xl shadow-blue-100/60 sm:p-10 lg:grid-cols-[1fr_420px] lg:gap-10">
+      <div class="grid content-center gap-5">
+        <p class="text-sm font-semibold uppercase tracking-[0.18em] text-blue-700">Madres cuidadoras</p>
+        <div class="grid gap-3">
+          <h1 class="text-3xl font-bold text-slate-950 sm:text-4xl">Marcación de asistencia</h1>
+          <p class="max-w-2xl text-base leading-7 text-slate-600">
+            Ingresa tu DNI para registrar tu asistencia del día. Esta pantalla es pública y no requiere iniciar sesión.
+          </p>
+        </div>
+        <p class="rounded-2xl bg-blue-50 p-4 text-sm leading-6 text-blue-900">
+          Usa únicamente el número de tu DNI. El sistema validará si la marcación corresponde al horario disponible.
+        </p>
+      </div>
+
+      <form class="grid content-start gap-5 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm" (submit)="onSubmit($event)" [attr.aria-busy]="markState.isSubmitting()">
+        <div class="grid gap-2">
+          <label class="text-sm font-semibold text-slate-700" for="documentNumber">DNI</label>
+          <input
+            id="documentNumber"
+            name="documentNumber"
+            type="text"
+            inputmode="numeric"
+            autocomplete="off"
+            autofocus
+            class="w-full rounded-2xl border border-slate-300 px-5 py-4 text-2xl font-semibold tracking-[0.2em] text-slate-950 outline-none transition focus:border-blue-500 focus:ring-4 focus:ring-blue-100 disabled:bg-slate-100"
+            aria-describedby="documentNumberHelp"
+            [disabled]="markState.isSubmitting()"
+            [value]="documentNumber()"
+            (input)="documentNumber.set($any($event.target).value)"
+          />
+          <p id="documentNumberHelp" class="text-sm text-slate-500">No ingreses puntos, espacios ni otro tipo de documento.</p>
+        </div>
+
+        @if (markState.error()) {
+          <p class="rounded-2xl border border-red-200 bg-red-50 p-4 text-sm font-medium text-red-700" role="alert">{{ markState.error() }}</p>
+        }
+
+        @if (markState.lastMark(); as mark) {
+          <article class="grid gap-2 rounded-2xl border border-green-200 bg-green-50 p-4 text-sm text-green-900" role="status" aria-live="polite">
+            <h2 class="font-bold">Marcación registrada</h2>
+            @if (mark.entryTime) {
+              <p>Hora registrada: {{ mark.entryTime }}</p>
+            }
+            @if (mark.source) {
+              <p>Origen: {{ markSourceLabel(mark) }}</p>
+            }
+            @if (mark.markKind) {
+              <p>Tipo de marcación: {{ markKindLabel(mark) }}</p>
+            }
+          </article>
+        }
+
+        <app-button label="Marcar asistencia" type="submit" [disabled]="!documentNumber().trim() || markState.isSubmitting()" [isLoading]="markState.isSubmitting()" />
+      </form>
+    </div>
   </section>
 </main>

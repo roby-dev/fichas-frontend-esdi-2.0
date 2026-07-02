@@ -1,10 +1,10 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
-import { CaregiverManagementComponent } from '../caregiver-management/caregiver-management.component';
+import { CaregiverAttendanceSectionsComponent } from '../caregiver-attendance-sections/caregiver-attendance-sections.component';
 
 @Component({
   standalone: true,
   selector: 'app-admin-caregiver-attendance',
-  imports: [CaregiverManagementComponent],
+  imports: [CaregiverAttendanceSectionsComponent],
   templateUrl: './admin-caregiver-attendance.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })

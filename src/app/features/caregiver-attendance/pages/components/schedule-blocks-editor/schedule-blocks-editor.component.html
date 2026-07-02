@@ -1,0 +1,52 @@
+<section class="space-y-3">
+  <div>
+    <div class="flex items-center justify-between">
+      <h3 class="text-sm font-semibold text-gray-700">Bloques de atención</h3>
+      <button type="button" class="text-sm text-blue-500 hover:brightness-90 cursor-pointer" (click)="addBlock()">+ Agregar bloque</button>
+    </div>
+    <p class="mt-1 text-xs text-gray-500">
+      Un bloque es un turno de atención dentro del día (por ejemplo: mañana, tarde). Define la hora de entrada, la tolerancia y la ventana para marcar asistencia.
+    </p>
+  </div>
+
+  @for (block of blocks(); track block.id; let index = $index) {
+    <div class="space-y-3 rounded-lg border border-gray-200 p-3">
+      <div class="flex items-center justify-between">
+        <span class="text-xs font-medium text-gray-400">Bloque {{ index + 1 }}</span>
+        <button type="button" class="text-xs text-red-600 hover:brightness-90 cursor-pointer" (click)="removeBlock(index)">Quitar</button>
+      </div>
+      <label class="block text-sm text-gray-700">
+        Nombre del bloque
+        <input type="text" placeholder="ej. Mañana, Tarde" class="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2 text-sm" [value]="block.name" (input)="updateBlock(index, { name: $any($event.target).value })" />
+      </label>
+      <div class="grid grid-cols-1 gap-3 sm:grid-cols-2">
+        <label class="block text-sm text-gray-700">
+          Hora de entrada
+          <input type="time" class="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2 text-sm" [value]="block.entryTime" (input)="updateBlock(index, { entryTime: $any($event.target).value })" />
+        </label>
+        <label class="block text-sm text-gray-700">
+          Hora de salida <span class="text-gray-400">(opcional)</span>
+          <input type="time" class="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2 text-sm" [value]="block.exitTime ?? ''" (input)="updateBlock(index, { exitTime: $any($event.target).value })" />
+        </label>
+      </div>
+      <div class="grid grid-cols-1 gap-3 sm:grid-cols-2">
+        <label class="block text-sm text-gray-700">
+          Tolerancia (minutos)
+          <input type="number" min="0" class="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2 text-sm" [value]="block.toleranceMinutes" (input)="updateBlock(index, { toleranceMinutes: toNumber($any($event.target).value) })" />
+          <span class="text-xs text-gray-400">Minutos de gracia luego de la entrada.</span>
+        </label>
+        <label class="block text-sm text-gray-700">
+          Ventana de marcado (minutos)
+          <input type="number" min="0" class="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2 text-sm" [value]="block.markingWindowMinutes" (input)="updateBlock(index, { markingWindowMinutes: toNumber($any($event.target).value) })" />
+          <span class="text-xs text-gray-400">Tiempo máximo para registrar la entrada.</span>
+        </label>
+      </div>
+      <label class="flex items-center gap-2 text-sm text-gray-700">
+        <input type="checkbox" [checked]="block.exitRequired" (change)="updateBlock(index, { exitRequired: $any($event.target).checked })" />
+        Requiere registrar salida
+      </label>
+    </div>
+  } @empty {
+    <p class="rounded-lg border border-dashed border-gray-300 p-3 text-sm text-gray-500">Agrega al menos un bloque para configurar el horario.</p>
+  }
+</section>

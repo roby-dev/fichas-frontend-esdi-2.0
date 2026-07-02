@@ -2,10 +2,13 @@ import { TestBed } from '@angular/core/testing';
 import { signal } from '@angular/core';
 import { AuthService } from '@/core/services/auth.service';
 import { of } from 'rxjs';
+import { AdminCommunityHallState } from '@/features/community-halls/states/admin-community-hall.state';
+import { CommunityHallState } from '@/features/community-halls/states/community-hall.state';
 import { CaregiverMotherResponse } from '../interfaces/caregiver-mother.interface';
 import { CaregiverAttendanceService } from '../services/caregiver-attendance.service';
 import { AdminCaregiverAttendanceState } from '../states/admin-caregiver-attendance.state';
 import { CaregiverAttendanceState } from '../states/caregiver-attendance.state';
+import { CaregiverMarkState } from '../states/caregiver-mark.state';
 import CaregiverAttendanceComponent from './caregiver-attendance/caregiver-attendance.component';
 import { AdminCaregiverAttendanceComponent } from './components/admin-caregiver-attendance/admin-caregiver-attendance.component';
 import { CaregiverManagementComponent } from './components/caregiver-management/caregiver-management.component';
@@ -38,6 +41,7 @@ describe('caregiver attendance management pages', () => {
     endDate: '2026-12-31',
     status: 'retired',
   };
+  const hall = { id: 'hall-1', name: 'Local Las Flores', localId: 'LC-1', committeeRef: 'committee-1', committee: {} } as never;
 
   function textContent(element: HTMLElement): string {
     return (element.textContent ?? '').replace(/\s+/g, ' ').trim();
@@ -49,6 +53,16 @@ describe('caregiver attendance management pages', () => {
       isLoading: signal(false),
       error: signal<string | null>(null),
       loadCaregivers: jasmine.createSpy('loadCaregivers').and.returnValue(of(caregivers)),
+      clear: jasmine.createSpy('clear'),
+    };
+  }
+
+  function hallStateDouble() {
+    return {
+      communityHalls: signal([hall]),
+      isLoading: signal(false),
+      error: signal<string | null>(null),
+      loadCommunityHalls: jasmine.createSpy('loadCommunityHalls').and.returnValue(of([hall])),
       clear: jasmine.createSpy('clear'),
     };
   }
@@ -65,6 +79,8 @@ describe('caregiver attendance management pages', () => {
   async function setupManagement(mode: 'admin' | 'user', caregivers = [maria, rosa]) {
     const adminState = stateDouble(caregivers);
     const userState = stateDouble(caregivers);
+    const adminHallState = hallStateDouble();
+    const userHallState = hallStateDouble();
     const service = {
       createCaregiver: jasmine.createSpy('createCaregiver').and.returnValue(of(maria)),
       updateCaregiver: jasmine.createSpy('updateCaregiver').and.returnValue(of(rosa)),
@@ -75,6 +91,8 @@ describe('caregiver attendance management pages', () => {
       providers: [
         { provide: AdminCaregiverAttendanceState, useValue: adminState },
         { provide: CaregiverAttendanceState, useValue: userState },
+        { provide: AdminCommunityHallState, useValue: adminHallState },
+        { provide: CommunityHallState, useValue: userHallState },
         { provide: CaregiverAttendanceService, useValue: service },
       ],
     }).compileComponents();
@@ -83,7 +101,7 @@ describe('caregiver attendance management pages', () => {
     fixture.componentRef.setInput('mode', mode);
     fixture.detectChanges();
 
-    return { fixture, component: fixture.componentInstance, adminState, userState, service };
+    return { fixture, component: fixture.componentInstance, adminState, userState, adminHallState, userHallState, service };
   }
 
   afterEach(() => {
@@ -94,11 +112,14 @@ describe('caregiver attendance management pages', () => {
   it('renders the admin wrapper as the shared caregiver management surface', async () => {
     const adminState = stateDouble([maria]);
     const userState = stateDouble([]);
+    const hallState = hallStateDouble();
     await TestBed.configureTestingModule({
       imports: [AdminCaregiverAttendanceComponent],
       providers: [
         { provide: AdminCaregiverAttendanceState, useValue: adminState },
         { provide: CaregiverAttendanceState, useValue: userState },
+        { provide: AdminCommunityHallState, useValue: hallState },
+        { provide: CommunityHallState, useValue: hallState },
         { provide: CaregiverAttendanceService, useValue: {} },
       ],
     }).compileComponents();
@@ -116,11 +137,14 @@ describe('caregiver attendance management pages', () => {
   it('renders the user or AT wrapper through the backend-scoped user seam', async () => {
     const adminState = stateDouble([]);
     const userState = stateDouble([rosa]);
+    const hallState = hallStateDouble();
     await TestBed.configureTestingModule({
       imports: [UserCaregiverAttendanceComponent],
       providers: [
         { provide: AdminCaregiverAttendanceState, useValue: adminState },
         { provide: CaregiverAttendanceState, useValue: userState },
+        { provide: AdminCommunityHallState, useValue: hallState },
+        { provide: CommunityHallState, useValue: hallState },
         { provide: CaregiverAttendanceService, useValue: {} },
       ],
     }).compileComponents();
@@ -228,9 +252,10 @@ describe('caregiver attendance management pages', () => {
       firstName: 'Ana',
       lastName: 'Torres',
       startDate: '2026-07-03',
+      communityHallId: 'hall-1',
     });
 
-    expect(service.createCaregiver).toHaveBeenCalledWith(jasmine.objectContaining({ startDate: '2026-07-03' }));
+    expect(service.createCaregiver).toHaveBeenCalledWith(jasmine.objectContaining({ startDate: '2026-07-03', communityHallId: 'hall-1' }));
     expect(adminState.loadCaregivers).toHaveBeenCalledTimes(2);
     expect(component.isModalOpen()).toBeFalse();
 
@@ -242,22 +267,40 @@ describe('caregiver attendance management pages', () => {
     expect(component.isModalOpen()).toBeFalse();
   });
 
-  it('renders the public self-service placeholder without authenticated workflow chrome', async () => {
-    await TestBed.configureTestingModule({ imports: [SelfServiceCaregiverAttendanceComponent] }).compileComponents();
+  it('renders the public self-service form without authenticated workflow chrome', async () => {
+    const markState = {
+      lastMark: signal(null),
+      isSubmitting: signal(false),
+      error: signal<string | null>(null),
+      selfService: jasmine.createSpy('selfService').and.returnValue(of({})),
+    };
+    await TestBed.configureTestingModule({
+      imports: [SelfServiceCaregiverAttendanceComponent],
+      providers: [{ provide: CaregiverMarkState, useValue: markState }],
+    }).compileComponents();
 
     const fixture = TestBed.createComponent(SelfServiceCaregiverAttendanceComponent);
     fixture.detectChanges();
 
-    expect(textContent(fixture.nativeElement)).toContain('Auto registro de asistencia MC');
-    expect(textContent(fixture.nativeElement)).toContain('Este acceso público queda preparado para el auto marcado.');
+    expect(textContent(fixture.nativeElement)).toContain('Marcación de asistencia');
+    expect(textContent(fixture.nativeElement)).toContain('Ingresa tu DNI para registrar tu asistencia del día.');
     expect(fixture.nativeElement.querySelector('router-outlet')).toBeNull();
-    expect(fixture.nativeElement.querySelector('form')).toBeNull();
+    expect(fixture.nativeElement.querySelector('form')).not.toBeNull();
   });
 
   it('renders the authenticated wrapper branch for admin users', async () => {
+    const caregiverState = stateDouble([maria]);
+    const hallState = hallStateDouble();
     await TestBed.configureTestingModule({
       imports: [CaregiverAttendanceComponent],
-      providers: [{ provide: AuthService, useValue: { isAdmin: () => true } }],
+      providers: [
+        { provide: AuthService, useValue: { isAdmin: () => true } },
+        { provide: AdminCaregiverAttendanceState, useValue: caregiverState },
+        { provide: CaregiverAttendanceState, useValue: caregiverState },
+        { provide: AdminCommunityHallState, useValue: hallState },
+        { provide: CommunityHallState, useValue: hallState },
+        { provide: CaregiverAttendanceService, useValue: {} },
+      ],
     }).compileComponents();
 
     const fixture = TestBed.createComponent(CaregiverAttendanceComponent);

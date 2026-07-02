@@ -1,0 +1,43 @@
+<div class="space-y-4">
+  <div class="flex flex-wrap gap-2 border-b border-gray-200 pb-2">
+    <button
+      type="button"
+      class="rounded-lg px-3 py-2 text-sm font-medium transition-colors"
+      [class.bg-blue-500]="activeSection() === 'caregivers'"
+      [class.text-white]="activeSection() === 'caregivers'"
+      [class.text-gray-600]="activeSection() !== 'caregivers'"
+      (click)="setSection('caregivers')">
+      Madres cuidadoras
+    </button>
+    <button
+      type="button"
+      class="rounded-lg px-3 py-2 text-sm font-medium transition-colors"
+      [class.bg-blue-500]="activeSection() === 'horarios'"
+      [class.text-white]="activeSection() === 'horarios'"
+      [class.text-gray-600]="activeSection() !== 'horarios'"
+      (click)="setSection('horarios')">
+      Horarios
+    </button>
+    <button
+      type="button"
+      class="rounded-lg px-3 py-2 text-sm font-medium transition-colors"
+      [class.bg-blue-500]="activeSection() === 'asistencias'"
+      [class.text-white]="activeSection() === 'asistencias'"
+      [class.text-gray-600]="activeSection() !== 'asistencias'"
+      (click)="setSection('asistencias')">
+      Marcado asistido
+    </button>
+  </div>
+
+  @switch (activeSection()) {
+    @case ('caregivers') {
+      <app-caregiver-management [mode]="mode()" />
+    }
+    @case ('horarios') {
+      <app-schedule-version-list [mode]="mode()" />
+    }
+    @case ('asistencias') {
+      <app-assisted-mark-form [mode]="mode()" />
+    }
+  }
+</div>

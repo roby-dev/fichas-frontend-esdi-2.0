@@ -1,0 +1,33 @@
+<section class="space-y-3">
+  <div>
+    <div class="flex items-center justify-between">
+      <h3 class="text-sm font-semibold text-gray-700">Días especiales</h3>
+      <button type="button" class="text-sm text-blue-500 hover:brightness-90 cursor-pointer" (click)="addSpecialDay()">+ Agregar día</button>
+    </div>
+    <p class="mt-1 text-xs text-gray-500">Feriados, días no laborables o fechas con bloques distintos a los habituales.</p>
+  </div>
+
+  @for (day of specialDays(); track day.localDate + $index; let index = $index) {
+    <div class="grid grid-cols-1 gap-3 rounded-lg border border-gray-200 p-3 sm:grid-cols-3">
+      <label class="text-sm text-gray-700">
+        Fecha
+        <input type="date" class="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2 text-sm" [value]="day.localDate" (input)="updateSpecialDay(index, { localDate: $any($event.target).value })" />
+      </label>
+      <label class="flex items-center gap-2 text-sm text-gray-700">
+        <input type="checkbox" [checked]="day.isWorkingDay" (change)="updateSpecialDay(index, { isWorkingDay: $any($event.target).checked })" />
+        Día laboral
+      </label>
+      <label class="text-sm text-gray-700">
+        Bloques
+        <select multiple class="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2 text-sm" (change)="updateSpecialDay(index, { blockIds: selectedBlockIds($any($event.target)) })">
+          @for (block of blocks(); track block.id) {
+            <option [value]="block.id" [selected]="day.blockIds.includes(block.id ?? '')">{{ block.name || 'Bloque sin nombre' }}</option>
+          }
+        </select>
+      </label>
+      <button type="button" class="sm:col-span-3 text-right text-sm text-red-600 hover:brightness-90" (click)="removeSpecialDay(index)">Quitar día especial</button>
+    </div>
+  } @empty {
+    <p class="rounded-lg border border-dashed border-gray-300 p-3 text-sm text-gray-500">No hay días especiales registrados.</p>
+  }
+</section>

@@ -27,6 +27,7 @@ describe('CaregiverAttendanceService', () => {
       firstName: 'Maria',
       lastName: 'Gonzalez',
       startDate: '2026-07-01',
+      communityHallId: 'hall-1',
     };
     const updateBody = { endDate: '2026-12-31', status: 'retired' as const };
     const transferBody = { communityHallId: 'hall-2', validFrom: '2026-08-01' };

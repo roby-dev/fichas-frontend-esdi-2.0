@@ -7,6 +7,7 @@ export interface CreateCaregiverMotherRequest {
   lastName: string;
   phone?: string;
   startDate: string;
+  communityHallId: string;
   endDate?: string;
   status?: CaregiverMotherStatus;
 }

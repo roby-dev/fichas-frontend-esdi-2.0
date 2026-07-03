@@ -39,7 +39,7 @@
             <td class="px-4 py-2 text-sm text-gray-800">{{ caregiver.fullName }}</td>
             <td class="px-4 py-2 text-sm text-gray-800">{{ caregiver.currentHallName ?? '-' }}</td>
             <td class="px-4 py-2 text-sm text-gray-800">{{ caregiver.phone || '-' }}</td>
-            <td class="px-4 py-2 text-sm text-gray-800">{{ (caregiver.startDate ?? '').split('T')[0] }}</td>
+            <td class="px-4 py-2 text-sm text-gray-800">{{ caregiver.startDate.split('T')[0] }}</td>
             <td class="px-4 py-2 text-sm text-gray-800">
               <span
                 class="inline-flex rounded-full px-2 py-1 text-xs font-medium"

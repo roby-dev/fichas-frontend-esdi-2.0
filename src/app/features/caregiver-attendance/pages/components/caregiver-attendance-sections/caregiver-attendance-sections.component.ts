@@ -2,14 +2,15 @@ import { ChangeDetectionStrategy, Component, input, signal } from '@angular/core
 import { CaregiverManagementComponent } from '../caregiver-management/caregiver-management.component';
 import { ScheduleVersionListComponent } from '../schedule-version-list/schedule-version-list.component';
 import { AssistedMarkFormComponent } from '../assisted-mark-form/assisted-mark-form.component';
+import { ReportViewComponent } from '../report-view/report-view.component';
 
 type CaregiverAttendanceMode = 'admin' | 'user';
-type CaregiverAttendanceSection = 'caregivers' | 'horarios' | 'asistencias';
+type CaregiverAttendanceSection = 'caregivers' | 'horarios' | 'asistencias' | 'reportes';
 
 @Component({
   standalone: true,
   selector: 'app-caregiver-attendance-sections',
-  imports: [CaregiverManagementComponent, ScheduleVersionListComponent, AssistedMarkFormComponent],
+  imports: [CaregiverManagementComponent, ScheduleVersionListComponent, AssistedMarkFormComponent, ReportViewComponent],
   templateUrl: './caregiver-attendance-sections.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })

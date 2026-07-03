@@ -27,6 +27,15 @@
       (click)="setSection('asistencias')">
       Marcado asistido
     </button>
+    <button
+      type="button"
+      class="rounded-lg px-3 py-2 text-sm font-medium transition-colors"
+      [class.bg-blue-500]="activeSection() === 'reportes'"
+      [class.text-white]="activeSection() === 'reportes'"
+      [class.text-gray-600]="activeSection() !== 'reportes'"
+      (click)="setSection('reportes')">
+      Reportes
+    </button>
   </div>
 
   @switch (activeSection()) {
@@ -38,6 +47,9 @@
     }
     @case ('asistencias') {
       <app-assisted-mark-form [mode]="mode()" />
+    }
+    @case ('reportes') {
+      <app-report-view [mode]="mode()" />
     }
   }
 </div>

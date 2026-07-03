@@ -14,6 +14,8 @@ describe('caregiver attendance state shells', () => {
     lastName: 'Gonzalez',
     fullName: 'Maria Gonzalez',
     phone: null,
+    currentHallId: 'hall-1',
+    currentHallName: 'Local Las Flores',
     startDate: '2026-07-01',
     endDate: null,
     status: 'active',

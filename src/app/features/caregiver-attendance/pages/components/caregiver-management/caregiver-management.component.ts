@@ -1,5 +1,4 @@
 import { ChangeDetectionStrategy, Component, OnInit, computed, inject, input, signal } from '@angular/core';
-import { FormField, form, required } from '@angular/forms/signals';
 import { Observable, of, switchMap } from 'rxjs';
 import { CommunityHall } from '@/features/community-halls/interfaces/community.interface';
 import { AdminCommunityHallState } from '@/features/community-halls/states/admin-community-hall.state';
@@ -20,11 +19,6 @@ import { CaregiverMotherFormComponent } from '../caregiver-mother-form/caregiver
 type CaregiverManagementMode = 'admin' | 'user';
 type CaregiverSaveRequest = CreateCaregiverMotherRequest | UpdateCaregiverMotherRequest;
 
-interface TransferFormModel {
-  communityHallId: string;
-  validFrom: string;
-}
-
 interface CaregiverLoadState {
   data: () => CaregiverMotherResponse[];
   loadCaregivers: () => ReturnType<CaregiverAttendanceState['loadCaregivers']>;
@@ -33,7 +27,7 @@ interface CaregiverLoadState {
 @Component({
   standalone: true,
   selector: 'app-caregiver-management',
-  imports: [ButtonComponent, ModalComponent, CaregiverMotherFormComponent, FormField],
+  imports: [ButtonComponent, ModalComponent, CaregiverMotherFormComponent],
   templateUrl: './caregiver-management.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
@@ -49,23 +43,25 @@ export class CaregiverManagementComponent implements OnInit {
   searchTerm = signal('');
   isModalOpen = signal(false);
   selectedCaregiver = signal<CaregiverMotherResponse | null>(null);
-  isTransferModalOpen = signal(false);
-  transferCaregiver = signal<CaregiverMotherResponse | null>(null);
   isSaving = signal(false);
   saveError = signal<string | null>(null);
   transferError = signal<string | null>(null);
 
-  transferModel = signal<TransferFormModel>({
-    communityHallId: '',
-    validFrom: this.todayString(),
-  });
+  // Retire confirmation modal
+  isRetireConfirmOpen = signal(false);
+  retireTarget = signal<CaregiverMotherResponse | null>(null);
 
-  transferForm = form(this.transferModel, (schemaPath) => {
-    required(schemaPath.communityHallId!, { message: 'Selecciona un local comunal.' });
-    required(schemaPath.validFrom!, { message: 'Selecciona la fecha de aplicación.' });
-  });
+  // Toolbar transfer modal state
+  isToolbarTransferOpen = signal(false);
+  toolbarTransferCaregiverId = signal('');
+  toolbarTransferHallId = signal('');
+  toolbarTransferDate = signal(this.todayString());
+  toolbarTransferSubmitted = signal(false);
 
   readonly caregivers = computed(() => this.activeState().data());
+  readonly activeCaregivers = computed(() =>
+    this.caregivers().filter((cg) => cg.status === 'active'),
+  );
   readonly halls = computed(() => this.activeHallState().communityHalls());
   readonly filteredCaregivers = computed(() => {
     const term = this.normalize(this.searchTerm());
@@ -80,9 +76,6 @@ export class CaregiverManagementComponent implements OnInit {
       ].some((value) => this.normalize(value).includes(term));
     });
   });
-
-  get transferCommunityHallIdControl() { return this.transferForm.communityHallId!; }
-  get transferValidFromControl() { return this.transferForm.validFrom!; }
 
   ngOnInit(): void {
     this.loadSelectedState();
@@ -120,48 +113,70 @@ export class CaregiverManagementComponent implements OnInit {
     this.saveError.set(null);
   }
 
-  openTransferModal(caregiver: CaregiverMotherResponse): void {
-    let opened = false;
+  // Toolbar — Asignar local modal
+
+  openToolbarTransfer(): void {
     this.ensureHallOptions().subscribe({
       next: () => {
-        opened = true;
-        this.openTransferForm(caregiver);
+        this.toolbarTransferCaregiverId.set('');
+        this.toolbarTransferHallId.set('');
+        this.toolbarTransferDate.set(this.todayString());
+        this.toolbarTransferSubmitted.set(false);
+        this.transferError.set(null);
+        this.isToolbarTransferOpen.set(true);
       },
-      error: () => this.openTransferForm(caregiver),
-      complete: () => {
-        if (!opened) this.openTransferForm(caregiver);
+      error: () => {
+        this.toolbarTransferCaregiverId.set('');
+        this.toolbarTransferHallId.set('');
+        this.toolbarTransferDate.set(this.todayString());
+        this.toolbarTransferSubmitted.set(false);
+        this.transferError.set(null);
+        this.isToolbarTransferOpen.set(true);
       },
     });
   }
 
-  closeTransferModal(): void {
-    this.isTransferModalOpen.set(false);
-    this.transferCaregiver.set(null);
+  closeToolbarTransfer(): void {
+    this.isToolbarTransferOpen.set(false);
     this.transferError.set(null);
   }
 
-  onTransferSubmit(event: Event): void {
+  onToolbarTransferCaregiverChange(event: Event): void {
+    this.toolbarTransferCaregiverId.set((event.target as HTMLSelectElement).value);
+  }
+
+  onToolbarTransferHallChange(event: Event): void {
+    this.toolbarTransferHallId.set((event.target as HTMLSelectElement).value);
+  }
+
+  onToolbarTransferDateChange(event: Event): void {
+    this.toolbarTransferDate.set((event.target as HTMLInputElement).value);
+  }
+
+  onToolbarTransferSubmit(event: Event): void {
     event.preventDefault();
-    if (this.transferForm().invalid()) return;
+    this.toolbarTransferSubmitted.set(true);
 
-    const caregiver = this.transferCaregiver();
-    if (!caregiver) return;
+    const caregiverId = this.toolbarTransferCaregiverId();
+    const communityHallId = this.toolbarTransferHallId();
+    const validFrom = this.toolbarTransferDate();
 
-    const value = this.transferModel();
+    if (!caregiverId || !communityHallId || !validFrom) return;
+
     const request: TransferCaregiverMotherRequest = {
-      communityHallId: value.communityHallId,
-      validFrom: value.validFrom,
+      communityHallId,
+      validFrom,
     };
 
     this.isSaving.set(true);
     this.transferError.set(null);
 
-    this.caregiverAttendanceService.transferCaregiver(caregiver.id, request)
+    this.caregiverAttendanceService.transferCaregiver(caregiverId, request)
       .pipe(switchMap(() => this.activeState().loadCaregivers()))
       .subscribe({
         next: () => {
           this.isSaving.set(false);
-          this.closeTransferModal();
+          this.closeToolbarTransfer();
         },
         error: (err) => {
           this.isSaving.set(false);
@@ -197,8 +212,21 @@ export class CaregiverManagementComponent implements OnInit {
     });
   }
 
-  retireCaregiver(caregiver: CaregiverMotherResponse): void {
-    if (caregiver.status !== 'active') return;
+  openRetireConfirm(caregiver: CaregiverMotherResponse): void {
+    this.retireTarget.set(caregiver);
+    this.saveError.set(null);
+    this.isRetireConfirmOpen.set(true);
+  }
+
+  closeRetireConfirm(): void {
+    this.isRetireConfirmOpen.set(false);
+    this.retireTarget.set(null);
+    this.saveError.set(null);
+  }
+
+  confirmRetire(): void {
+    const caregiver = this.retireTarget();
+    if (!caregiver || caregiver.status !== 'active') return;
 
     this.isSaving.set(true);
     this.saveError.set(null);
@@ -209,6 +237,7 @@ export class CaregiverManagementComponent implements OnInit {
     }).pipe(switchMap(() => this.activeState().loadCaregivers())).subscribe({
       next: () => {
         this.isSaving.set(false);
+        this.closeRetireConfirm();
       },
       error: (err) => {
         this.isSaving.set(false);
@@ -218,19 +247,28 @@ export class CaregiverManagementComponent implements OnInit {
     });
   }
 
-  statusLabel(caregiver: CaregiverMotherResponse): string {
-    return caregiver.status === 'active' ? 'Activa' : 'Retirada';
+  reactivateCaregiver(caregiver: CaregiverMotherResponse): void {
+    if (caregiver.status !== 'retired') return;
+
+    this.isSaving.set(true);
+    this.saveError.set(null);
+
+    this.caregiverAttendanceService.updateCaregiver(caregiver.id, {
+      status: 'active',
+    }).pipe(switchMap(() => this.activeState().loadCaregivers())).subscribe({
+      next: () => {
+        this.isSaving.set(false);
+      },
+      error: (err) => {
+        this.isSaving.set(false);
+        this.saveError.set(err?.message ?? 'No se pudo reactivar la madre cuidadora.');
+        console.error(err);
+      },
+    });
   }
 
-  private openTransferForm(caregiver: CaregiverMotherResponse): void {
-    const halls = this.halls();
-    this.transferCaregiver.set(caregiver);
-    this.transferError.set(null);
-    this.transferModel.set({
-      communityHallId: halls.length === 1 ? halls[0].id : '',
-      validFrom: this.todayString(),
-    });
-    this.isTransferModalOpen.set(true);
+  statusLabel(caregiver: CaregiverMotherResponse): string {
+    return caregiver.status === 'active' ? 'Activa' : 'Retirada';
   }
 
   private loadSelectedState(): void {

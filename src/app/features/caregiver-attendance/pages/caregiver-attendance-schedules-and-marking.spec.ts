@@ -28,6 +28,8 @@ describe('caregiver attendance schedules and marking', () => {
     lastName: 'Gonzalez',
     fullName: 'Maria Gonzalez',
     phone: null,
+    currentHallId: 'hall-1',
+    currentHallName: 'Local Las Flores',
     startDate: '2026-07-01',
     endDate: null,
     status: 'active',
@@ -47,7 +49,7 @@ describe('caregiver attendance schedules and marking', () => {
     return (element.textContent ?? '').replace(/\s+/g, ' ').trim();
   }
 
-  function setupProviders() {
+  function setupProviders(caregivers: CaregiverMotherResponse[] = [caregiver]) {
     const scheduleState = {
       versions: signal<ScheduleVersionResponse[]>([schedule]),
       selectedHallId: signal<string | null>(null),
@@ -69,10 +71,10 @@ describe('caregiver attendance schedules and marking', () => {
       clear: jasmine.createSpy('clear'),
     };
     const caregiverState = {
-      data: signal([caregiver]),
+      data: signal(caregivers),
       isLoading: signal(false),
       error: signal<string | null>(null),
-      loadCaregivers: jasmine.createSpy('loadCaregivers').and.returnValue(of([caregiver])),
+      loadCaregivers: jasmine.createSpy('loadCaregivers').and.returnValue(of(caregivers)),
       clear: jasmine.createSpy('clear'),
     };
     const hallState = {
@@ -179,7 +181,7 @@ describe('caregiver attendance schedules and marking', () => {
     expect(typeof request.validFrom).toBe('string');
   });
 
-  it('submits caregiver local assignments through the transfer endpoint', async () => {
+  it('submits caregiver local assignments through the toolbar transfer', async () => {
     const doubles = setupProviders();
     await TestBed.configureTestingModule({
       imports: [CaregiverManagementComponent],
@@ -196,16 +198,73 @@ describe('caregiver attendance schedules and marking', () => {
     fixture.componentRef.setInput('mode', 'admin');
     fixture.detectChanges();
     const component = fixture.componentInstance;
-    component.openTransferModal(caregiver);
-    component.transferModel.set({ communityHallId: 'hall-1', validFrom: '2026-07-03' });
-    component.onTransferSubmit(new Event('submit'));
+    component.openToolbarTransfer();
+    component.toolbarTransferCaregiverId.set('caregiver-1');
+    component.toolbarTransferHallId.set('hall-1');
+    component.toolbarTransferDate.set('2026-07-03');
+    component.onToolbarTransferSubmit(new Event('submit'));
 
     expect(doubles.service.transferCaregiver).toHaveBeenCalledOnceWith('caregiver-1', {
       communityHallId: 'hall-1',
       validFrom: '2026-07-03',
     });
     expect(doubles.caregiverState.loadCaregivers).toHaveBeenCalled();
-    expect(component.isTransferModalOpen()).toBeFalse();
+    expect(component.isToolbarTransferOpen()).toBeFalse();
+  });
+
+  it('renders caregiver current hall column with name and dash fallback', async () => {
+    const doubles = setupProviders([
+      caregiver,
+      { ...caregiver, id: 'caregiver-2', documentNumber: '87654321', fullName: 'Ana Perez', currentHallId: null, currentHallName: null },
+    ]);
+    await TestBed.configureTestingModule({
+      imports: [CaregiverManagementComponent],
+      providers: [
+        { provide: AdminCaregiverAttendanceState, useValue: doubles.caregiverState },
+        { provide: CaregiverAttendanceState, useValue: doubles.caregiverState },
+        { provide: AdminCommunityHallState, useValue: doubles.hallState },
+        { provide: CommunityHallState, useValue: doubles.hallState },
+        { provide: CaregiverAttendanceService, useValue: doubles.service },
+      ],
+    }).compileComponents();
+
+    const fixture = TestBed.createComponent(CaregiverManagementComponent);
+    fixture.componentRef.setInput('mode', 'admin');
+    fixture.detectChanges();
+    const headers = Array.from<HTMLElement>(fixture.nativeElement.querySelectorAll('th')).map((header) => textContent(header));
+    const rows = fixture.nativeElement.querySelectorAll('tbody tr');
+    const firstRowCells = Array.from<HTMLElement>(rows[0].querySelectorAll('td')).map((cell) => textContent(cell));
+    const secondRowCells = Array.from<HTMLElement>(rows[1].querySelectorAll('td')).map((cell) => textContent(cell));
+
+    expect(headers).toContain('Local comunal');
+    expect(headers.indexOf('Local comunal')).toBe(headers.indexOf('Nombre completo') + 1);
+    expect(firstRowCells[2]).toBe('Local Las Flores');
+    expect(secondRowCells[2]).toBe('-');
+    expect(firstRowCells).toContain('2026-07-01');
+  });
+
+  it('aligns caregiver empty state colspan with all table headers', async () => {
+    const doubles = setupProviders([]);
+    await TestBed.configureTestingModule({
+      imports: [CaregiverManagementComponent],
+      providers: [
+        { provide: AdminCaregiverAttendanceState, useValue: doubles.caregiverState },
+        { provide: CaregiverAttendanceState, useValue: doubles.caregiverState },
+        { provide: AdminCommunityHallState, useValue: doubles.hallState },
+        { provide: CommunityHallState, useValue: doubles.hallState },
+        { provide: CaregiverAttendanceService, useValue: doubles.service },
+      ],
+    }).compileComponents();
+
+    const fixture = TestBed.createComponent(CaregiverManagementComponent);
+    fixture.componentRef.setInput('mode', 'admin');
+    fixture.detectChanges();
+    const headers = fixture.nativeElement.querySelectorAll('th');
+    const emptyCell = fixture.nativeElement.querySelector('tbody td');
+
+    expect(headers.length).toBe(7);
+    expect(emptyCell.getAttribute('colspan')).toBe('7');
+    expect(textContent(emptyCell)).toBe('No hay madres cuidadoras registradas.');
   });
 
   it('emits a copy-to-hall request with string values', async () => {

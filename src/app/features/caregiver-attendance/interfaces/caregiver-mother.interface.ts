@@ -36,6 +36,8 @@ export interface CaregiverMotherResponse {
   lastName: string;
   fullName: string;
   phone: string | null;
+  currentHallId: string | null;
+  currentHallName: string | null;
   startDate: string;
   endDate: string | null;
   status: CaregiverMotherStatus;

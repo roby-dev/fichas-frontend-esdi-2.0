@@ -24,6 +24,8 @@ describe('caregiver attendance management pages', () => {
     lastName: 'Gonzalez',
     fullName: 'Maria Gonzalez',
     phone: '999111222',
+    currentHallId: 'hall-1',
+    currentHallName: 'Local Las Flores',
     startDate: '2026-07-01',
     endDate: null,
     status: 'active',
@@ -37,6 +39,8 @@ describe('caregiver attendance management pages', () => {
     lastName: 'Lopez',
     fullName: 'Rosa Lopez',
     phone: null,
+    currentHallId: null,
+    currentHallName: null,
     startDate: '2026-06-15',
     endDate: '2026-12-31',
     status: 'retired',
@@ -181,7 +185,6 @@ describe('caregiver attendance management pages', () => {
     expect(textContent(fixture.nativeElement)).toContain('Nombre completo');
     expect(textContent(fixture.nativeElement)).toContain('Teléfono');
     expect(textContent(fixture.nativeElement)).toContain('Inicio');
-    expect(textContent(fixture.nativeElement)).toContain('Fin');
     expect(textContent(fixture.nativeElement)).toContain('Estado');
     expect(textContent(fixture.nativeElement)).toContain('Maria Gonzalez');
     expect(textContent(fixture.nativeElement)).toContain('Rosa Lopez');
@@ -213,31 +216,54 @@ describe('caregiver attendance management pages', () => {
     expect(text).not.toContain('reporte');
   });
 
-  it('shows Retirar only for active caregivers', async () => {
+  it('shows Retirar for active and Reactivar for retired', async () => {
     const active = await setupManagement('admin', [maria]);
-    expect(textContent(active.fixture.nativeElement)).toContain('Retirar');
+    expect(active.fixture.nativeElement.querySelector('button[title="Retirar cuidadora"]')).not.toBeNull();
+    expect(active.fixture.nativeElement.querySelector('button[title="Reactivar cuidadora"]')).toBeNull();
 
     TestBed.resetTestingModule();
     const retired = await setupManagement('admin', [rosa]);
-    expect(textContent(retired.fixture.nativeElement)).not.toContain('Retirar');
+    expect(retired.fixture.nativeElement.querySelector('button[title="Retirar cuidadora"]')).toBeNull();
+    expect(retired.fixture.nativeElement.querySelector('button[title="Reactivar cuidadora"]')).not.toBeNull();
     expect(textContent(retired.fixture.nativeElement)).toContain('Retirada');
   });
 
-  it('retires an active caregiver with a local date string and reloads the selected state', async () => {
+  it('opens retire confirmation, confirms, and retires the caregiver', async () => {
     jasmine.clock().install();
     jasmine.clock().mockDate(new Date(2026, 6, 5, 12, 0, 0));
-    const { fixture, adminState, service } = await setupManagement('admin', [maria]);
+    const { fixture, component, adminState, service } = await setupManagement('admin', [maria]);
 
-    const retireButton = Array.from(fixture.nativeElement.querySelectorAll('button'))
-      .find((button) => textContent(button as HTMLElement) === 'Retirar') as HTMLButtonElement | undefined;
+    const retireButton = fixture.nativeElement.querySelector('button[title="Retirar cuidadora"]') as HTMLButtonElement | undefined;
     expect(retireButton).toBeDefined();
 
     retireButton!.click();
     fixture.detectChanges();
 
+    expect(component.isRetireConfirmOpen()).toBeTrue();
+    expect(component.retireTarget()?.fullName).toBe('Maria Gonzalez');
+
+    component.confirmRetire();
+    fixture.detectChanges();
+
     expect(service.updateCaregiver).toHaveBeenCalledWith('caregiver-1', {
       status: 'retired',
       endDate: todayString(),
+    });
+    expect(adminState.loadCaregivers).toHaveBeenCalledTimes(2);
+    expect(component.isRetireConfirmOpen()).toBeFalse();
+  });
+
+  it('reactivates a retired caregiver', async () => {
+    const { fixture, component, adminState, service } = await setupManagement('admin', [rosa]);
+
+    const reactivateButton = fixture.nativeElement.querySelector('button[title="Reactivar cuidadora"]') as HTMLButtonElement | undefined;
+    expect(reactivateButton).toBeDefined();
+
+    reactivateButton!.click();
+    fixture.detectChanges();
+
+    expect(service.updateCaregiver).toHaveBeenCalledWith('caregiver-2', {
+      status: 'active',
     });
     expect(adminState.loadCaregivers).toHaveBeenCalledTimes(2);
   });

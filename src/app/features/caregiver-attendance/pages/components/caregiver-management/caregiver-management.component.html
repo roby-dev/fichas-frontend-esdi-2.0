@@ -1,7 +1,10 @@
 <div>
   <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between mb-4">
     <h2 class="text-lg font-semibold">Madres cuidadoras</h2>
-    <app-button label="Crear" (action)="openModal()" />
+    <div class="flex gap-2">
+      <app-button label="Asignar local" (action)="openToolbarTransfer()" />
+      <app-button label="Crear" (action)="openModal()" />
+    </div>
   </div>
 
   <div class="mb-4">
@@ -20,11 +23,11 @@
         <tr>
           <th class="px-4 py-2 text-left text-sm font-medium text-gray-600">Documento</th>
           <th class="px-4 py-2 text-left text-sm font-medium text-gray-600">Nombre completo</th>
+          <th class="px-4 py-2 text-left text-sm font-medium text-gray-600">Local comunal</th>
           <th class="px-4 py-2 text-left text-sm font-medium text-gray-600">Teléfono</th>
           <th class="px-4 py-2 text-left text-sm font-medium text-gray-600">Inicio</th>
-          <th class="px-4 py-2 text-left text-sm font-medium text-gray-600">Fin</th>
           <th class="px-4 py-2 text-left text-sm font-medium text-gray-600">Estado</th>
-          <th class="px-4 py-2 text-right text-sm font-medium text-gray-600">Acciones</th>
+          <th class="px-4 py-2 text-right text-sm font-medium text-gray-400 w-10"><!-- Retirar --></th>
         </tr>
       </thead>
       <tbody class="divide-y divide-gray-100">
@@ -34,9 +37,9 @@
               {{ caregiver.documentType }} {{ caregiver.documentNumber }}
             </td>
             <td class="px-4 py-2 text-sm text-gray-800">{{ caregiver.fullName }}</td>
+            <td class="px-4 py-2 text-sm text-gray-800">{{ caregiver.currentHallName ?? '-' }}</td>
             <td class="px-4 py-2 text-sm text-gray-800">{{ caregiver.phone || '-' }}</td>
-            <td class="px-4 py-2 text-sm text-gray-800">{{ caregiver.startDate }}</td>
-            <td class="px-4 py-2 text-sm text-gray-800">{{ caregiver.endDate || '-' }}</td>
+            <td class="px-4 py-2 text-sm text-gray-800">{{ (caregiver.startDate ?? '').split('T')[0] }}</td>
             <td class="px-4 py-2 text-sm text-gray-800">
               <span
                 class="inline-flex rounded-full px-2 py-1 text-xs font-medium"
@@ -48,24 +51,28 @@
               </span>
             </td>
             <td class="px-4 py-2 text-sm text-gray-800 text-right">
-              <button
-                type="button"
-                class="text-blue-500 hover:brightness-90 cursor-pointer"
-                (click)="$event.stopPropagation(); openModal(caregiver)">
-                Editar
-              </button>
               @if (caregiver.status === 'active') {
                 <button
                   type="button"
-                  class="ml-3 text-blue-600 hover:brightness-90 cursor-pointer"
-                  (click)="$event.stopPropagation(); openTransferModal(caregiver)">
-                  Asignar local
+                  class="text-gray-400 hover:text-red-600 cursor-pointer transition-colors"
+                  title="Retirar cuidadora"
+                  (click)="$event.stopPropagation(); openRetireConfirm(caregiver)">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="10"/>
+                    <line x1="8" y1="12" x2="16" y2="12"/>
+                  </svg>
                 </button>
+              }
+              @if (caregiver.status === 'retired') {
                 <button
                   type="button"
-                  class="ml-3 text-red-600 hover:brightness-90 cursor-pointer"
-                  (click)="$event.stopPropagation(); retireCaregiver(caregiver)">
-                  Retirar
+                  class="text-gray-400 hover:text-green-600 cursor-pointer transition-colors"
+                  title="Reactivar cuidadora"
+                  (click)="$event.stopPropagation(); reactivateCaregiver(caregiver)">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="23 4 23 10 17 10"/>
+                    <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/>
+                  </svg>
                 </button>
               }
             </td>
@@ -103,61 +110,95 @@
     </app-modal>
   }
 
-  @if (isTransferModalOpen()) {
+  @if (isRetireConfirmOpen()) {
+    <app-modal
+      title="Retirar madre cuidadora"
+      size="sm"
+      (closed)="closeRetireConfirm()">
+      <div class="p-4">
+        <p class="text-sm text-gray-600">
+          ¿Estás seguro de retirar a <strong>{{ retireTarget()?.fullName }}</strong>?
+        </p>
+        <p class="mt-2 text-sm text-gray-500">
+          Se registrará la fecha de baja como hoy y la cuidadora dejará de estar activa.
+        </p>
+        <div class="flex justify-end gap-2 mt-6">
+          <app-button label="Cancelar" [outline]="true" (action)="closeRetireConfirm()" />
+          <app-button
+            [label]="isSaving() ? 'Retirando...' : 'Sí, retirar'"
+            [disabled]="isSaving()"
+            (action)="confirmRetire()"
+          />
+        </div>
+      </div>
+    </app-modal>
+  }
+
+  @if (isToolbarTransferOpen()) {
     <app-modal
       title="Asignar local comunal"
       size="md"
-      (closed)="closeTransferModal()">
-      <form (submit)="onTransferSubmit($event)" class="p-4">
+      (closed)="closeToolbarTransfer()">
+      <form (submit)="onToolbarTransferSubmit($event)" class="p-4">
         <p class="mb-4 text-sm text-gray-600">
-          Selecciona el local comunal para {{ transferCaregiver()?.fullName }} y desde cuándo aplica.
+          Selecciona la cuidadora, el local comunal y desde cuándo aplica la asignación.
         </p>
 
-        <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
-          <div class="sm:col-span-2">
+        <div class="grid grid-cols-1 gap-4">
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Madre cuidadora</label>
+            <select
+              [value]="toolbarTransferCaregiverId()"
+              (change)="onToolbarTransferCaregiverChange($event)"
+              class="mt-1 block w-full rounded-lg border border-gray-300 px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors">
+              <option value="">Selecciona una cuidadora</option>
+              @for (cg of activeCaregivers(); track cg.id) {
+                <option [value]="cg.id">{{ cg.fullName }} ({{ cg.documentType }} {{ cg.documentNumber }})</option>
+              }
+            </select>
+            @if (!toolbarTransferCaregiverId() && toolbarTransferSubmitted()) {
+              <div class="mt-1 text-xs text-red-500">Selecciona una cuidadora.</div>
+            }
+          </div>
+
+          <div>
             <label class="block text-sm font-medium text-gray-700 mb-1">Local comunal</label>
             <select
-              [formField]="transferCommunityHallIdControl"
+              [value]="toolbarTransferHallId()"
+              (change)="onToolbarTransferHallChange($event)"
               class="mt-1 block w-full rounded-lg border border-gray-300 px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors">
               <option value="">Selecciona un local comunal</option>
               @for (hall of halls(); track hall.id) {
                 <option [value]="hall.id">{{ hall.name }}</option>
               }
             </select>
-            @if (transferCommunityHallIdControl().invalid() && transferCommunityHallIdControl().touched()) {
-              <div class="mt-1 text-xs text-red-500">
-                @for (error of transferCommunityHallIdControl().errors(); track error) {
-                  <span class="block">{{ error.message }}</span>
-                }
-              </div>
+            @if (!toolbarTransferHallId() && toolbarTransferSubmitted()) {
+              <div class="mt-1 text-xs text-red-500">Selecciona un local comunal.</div>
             }
           </div>
 
-          <div class="sm:col-span-2">
+          <div>
             <label class="block text-sm font-medium text-gray-700 mb-1">Aplica desde</label>
             <input
               type="date"
-              [formField]="transferValidFromControl"
+              [value]="toolbarTransferDate()"
+              (change)="onToolbarTransferDateChange($event)"
               class="mt-1 block w-full rounded-lg border border-gray-300 px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
             />
-            @if (transferValidFromControl().invalid() && transferValidFromControl().touched()) {
-              <div class="mt-1 text-xs text-red-500">
-                @for (error of transferValidFromControl().errors(); track error) {
-                  <span class="block">{{ error.message }}</span>
-                }
-              </div>
+            @if (!toolbarTransferDate() && toolbarTransferSubmitted()) {
+              <div class="mt-1 text-xs text-red-500">Selecciona una fecha.</div>
             }
           </div>
 
           @if (halls().length === 0) {
-            <p class="sm:col-span-2 text-sm text-gray-500">No hay locales comunales disponibles.</p>
+            <p class="text-sm text-gray-500">No hay locales comunales disponibles.</p>
           }
         </div>
 
         <div class="flex justify-end pt-6">
           <app-button
             [label]="isSaving() ? 'Asignando...' : 'Asignar local'"
-            [disabled]="isSaving() || transferForm().invalid()"
+            [disabled]="isSaving() || halls().length === 0"
             type="submit"
           ></app-button>
         </div>

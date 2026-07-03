@@ -11,6 +11,8 @@ describe('CaregiverMotherFormComponent', () => {
     lastName: 'Gonzalez',
     fullName: 'Maria Gonzalez',
     phone: '999111222',
+    currentHallId: 'hall-1',
+    currentHallName: 'Local Las Flores',
     startDate: '2026-07-01',
     endDate: '2026-12-31',
     status: 'retired',

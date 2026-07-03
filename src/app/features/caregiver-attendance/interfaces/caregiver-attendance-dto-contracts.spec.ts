@@ -23,12 +23,16 @@ describe('caregiver attendance DTO date contracts', () => {
       lastName: 'Gonzalez',
       fullName: 'Maria Gonzalez',
       phone: null,
+      currentHallId: 'hall-1',
+      currentHallName: 'Local Las Flores',
       startDate: '2026-07-01',
       endDate: null,
       status: 'active',
     };
 
     expect(response.startDate).toBe('2026-07-01');
+    expect(response.currentHallId).toBe('hall-1');
+    expect(response.currentHallName).toBe('Local Las Flores');
     expect(typeof response.startDate).toBe('string');
     expect(response.endDate).toBeNull();
   });

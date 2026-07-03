@@ -3,14 +3,17 @@ import { CaregiverManagementComponent } from '../caregiver-management/caregiver-
 import { ScheduleVersionListComponent } from '../schedule-version-list/schedule-version-list.component';
 import { AssistedMarkFormComponent } from '../assisted-mark-form/assisted-mark-form.component';
 import { ReportViewComponent } from '../report-view/report-view.component';
+import { ExceptionViewComponent } from '../exception-view/exception-view.component';
+import { CorrectionViewComponent } from '../correction-view/correction-view.component';
+import AssignmentHistoryViewComponent from '../assignment-history-view/assignment-history-view.component';
 
 type CaregiverAttendanceMode = 'admin' | 'user';
-type CaregiverAttendanceSection = 'caregivers' | 'horarios' | 'asistencias' | 'reportes';
+type CaregiverAttendanceSection = 'caregivers' | 'historial' | 'horarios' | 'asistencias' | 'reportes' | 'excepciones' | 'correcciones';
 
 @Component({
   standalone: true,
   selector: 'app-caregiver-attendance-sections',
-  imports: [CaregiverManagementComponent, ScheduleVersionListComponent, AssistedMarkFormComponent, ReportViewComponent],
+  imports: [CaregiverManagementComponent, AssignmentHistoryViewComponent, ScheduleVersionListComponent, AssistedMarkFormComponent, ReportViewComponent, ExceptionViewComponent, CorrectionViewComponent],
   templateUrl: './caregiver-attendance-sections.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })

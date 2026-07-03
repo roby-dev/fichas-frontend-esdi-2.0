@@ -1,0 +1,176 @@
+<div>
+  <h2 class="text-lg font-semibold mb-4">Excepciones de asistencia</h2>
+
+  <!-- Filters -->
+  <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-6">
+    <div>
+      <label class="block text-sm font-medium text-gray-700 mb-1">Local comunal</label>
+      <select
+        [value]="selectedHallId()"
+        (change)="onHallChange($event)"
+        class="block w-full rounded-lg border border-gray-300 px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors">
+        <option value="">Selecciona un local</option>
+        @for (hall of halls(); track hall.id) {
+          <option [value]="hall.id">{{ hall.name }}</option>
+        }
+      </select>
+    </div>
+
+    <div>
+      <label class="block text-sm font-medium text-gray-700 mb-1">Fecha</label>
+      <input
+        type="date"
+        [value]="selectedDate()"
+        (change)="onDateChange($event)"
+        class="block w-full rounded-lg border border-gray-300 px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+      />
+    </div>
+
+    <div class="flex items-end">
+      <app-button label="Nueva excepción" (action)="openCreate()" [disabled]="!selectedHallId()" />
+    </div>
+  </div>
+
+  @if (error()) {
+    <p class="text-sm text-red-600 py-2" role="alert">{{ error() }}</p>
+  }
+
+  @if (saveError()) {
+    <p class="text-sm text-red-600 py-2" role="alert">{{ saveError() }}</p>
+  }
+
+  @if (isLoading()) {
+    <p class="text-sm text-gray-500 py-8 text-center">Cargando excepciones...</p>
+  }
+
+  @if (!isLoading() && selectedHallId()) {
+    <div class="overflow-x-auto bg-white shadow-sm rounded">
+      <table class="min-w-full divide-y divide-gray-200 text-sm">
+        <thead class="bg-gray-50">
+          <tr>
+            <th class="px-3 py-2 text-left font-medium text-gray-600">Tipo</th>
+            <th class="px-3 py-2 text-left font-medium text-gray-600">Alcance</th>
+            <th class="px-3 py-2 text-left font-medium text-gray-600">Motivo</th>
+            <th class="px-3 py-2 text-left font-medium text-gray-600">Estado</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-gray-100">
+          @for (ex of exceptions(); track ex.id) {
+            <tr class="hover:bg-gray-50">
+              <td class="px-3 py-2">
+                <span [class]="kindCls(ex.kind)">{{ kindLabel(ex.kind) }}</span>
+              </td>
+              <td class="px-3 py-2 text-gray-800">{{ scopeLabel(ex.scope) }}</td>
+              <td class="px-3 py-2 text-gray-800">{{ ex.reason }}</td>
+              <td class="px-3 py-2">
+                <span
+                  class="inline-flex rounded-full px-2 py-0.5 text-xs font-medium"
+                  [class.bg-green-100]="ex.status === 'accepted'"
+                  [class.text-green-700]="ex.status === 'accepted'"
+                  [class.bg-yellow-100]="ex.status === 'pending'"
+                  [class.text-yellow-700]="ex.status === 'pending'">
+                  {{ ex.status === 'accepted' ? 'Aceptado' : 'Pendiente' }}
+                </span>
+              </td>
+            </tr>
+          } @empty {
+            <tr>
+              <td colspan="4" class="px-3 py-8 text-sm text-center text-gray-500">
+                No hay excepciones para esta fecha.
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+
+  @if (!selectedHallId()) {
+    <p class="text-sm text-gray-500 py-8 text-center">Selecciona un local comunal para ver sus excepciones.</p>
+  }
+
+  <!-- Create modal -->
+  @if (isCreateOpen()) {
+    <app-modal
+      title="Nueva excepción"
+      size="md"
+      (closed)="closeCreate()">
+      <form (submit)="onCreateSubmit()" class="p-4">
+        <div class="grid grid-cols-1 gap-4">
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Tipo</label>
+            <select
+              [value]="createKind()"
+              (change)="createKind.set(($any($event.target).value))"
+              class="block w-full rounded-lg border border-gray-300 px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors">
+              @for (k of exceptionKinds; track k.value) {
+                <option [value]="k.value">{{ k.label }}</option>
+              }
+            </select>
+          </div>
+
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Alcance</label>
+            <select
+              [value]="createScope()"
+              (change)="createScope.set(($any($event.target).value))"
+              class="block w-full rounded-lg border border-gray-300 px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors">
+              <option value="hall">Local comunal</option>
+              <option value="caregiver">Cuidadora específica</option>
+            </select>
+          </div>
+
+          @if (createScope() === 'caregiver') {
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">Cuidadora</label>
+              <select
+                [value]="createCaregiverId()"
+                (change)="createCaregiverId.set(($any($event.target).value))"
+                class="block w-full rounded-lg border border-gray-300 px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors">
+                <option value="">Selecciona una cuidadora</option>
+                @for (cg of caregivers(); track cg.id) {
+                  <option [value]="cg.id">{{ cg.fullName }}</option>
+                }
+              </select>
+            </div>
+          }
+
+          @if (selectedHallId()) {
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">Fecha</label>
+              <input
+                type="date"
+                [value]="selectedDate()"
+                class="block w-full rounded-lg border border-gray-300 px-3 py-2 text-sm bg-gray-100 text-gray-500 cursor-not-allowed"
+                disabled
+              />
+            </div>
+          }
+
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Motivo</label>
+            <textarea
+              [value]="createReason()"
+              (input)="createReason.set(($any($event.target).value))"
+              rows="2"
+              placeholder="Describe el motivo de la excepción..."
+              class="block w-full rounded-lg border border-gray-300 px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+            ></textarea>
+            @if (!createReason().trim() && createSubmitted()) {
+              <div class="mt-1 text-xs text-red-500">El motivo es obligatorio.</div>
+            }
+          </div>
+        </div>
+
+        <div class="flex justify-end gap-2 pt-6">
+          <app-button label="Cancelar" [outline]="true" (action)="closeCreate()" />
+          <app-button
+            [label]="isSaving() ? 'Guardando...' : 'Crear excepción'"
+            [disabled]="isSaving()"
+            type="submit"
+          />
+        </div>
+      </form>
+    </app-modal>
+  }
+</div>

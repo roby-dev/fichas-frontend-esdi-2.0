@@ -1,0 +1,160 @@
+<div>
+  <h2 class="text-lg font-semibold mb-4">Corrección de marcaciones</h2>
+
+  <!-- Filters -->
+  <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-6">
+    <div>
+      <label class="block text-sm font-medium text-gray-700 mb-1">Madre cuidadora</label>
+      <select
+        [value]="selectedCaregiverId()"
+        (change)="onCaregiverChange($event)"
+        class="block w-full rounded-lg border border-gray-300 px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors">
+        <option value="">Selecciona una cuidadora</option>
+        @for (cg of caregivers(); track cg.id) {
+          <option [value]="cg.id">{{ cg.fullName }}</option>
+        }
+      </select>
+    </div>
+
+    <div>
+      <label class="block text-sm font-medium text-gray-700 mb-1">Fecha (opcional)</label>
+      <input
+        type="date"
+        [value]="selectedDate()"
+        (change)="onDateChange($event)"
+        class="block w-full rounded-lg border border-gray-300 px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+      />
+    </div>
+
+    <div class="flex items-end">
+      <app-button
+        label="Buscar"
+        [disabled]="!selectedCaregiverId() || isLoading()"
+        (action)="loadMarks()"
+      />
+    </div>
+  </div>
+
+  @if (error()) {
+    <p class="text-sm text-red-600 py-2" role="alert">{{ error() }}</p>
+  }
+
+  @if (saveError()) {
+    <p class="text-sm text-red-600 py-2" role="alert">{{ saveError() }}</p>
+  }
+
+  @if (isLoading()) {
+    <p class="text-sm text-gray-500 py-8 text-center">Cargando marcaciones...</p>
+  }
+
+  @if (!isLoading() && selectedCaregiverId()) {
+    <div class="overflow-x-auto bg-white shadow-sm rounded">
+      <table class="min-w-full divide-y divide-gray-200 text-sm">
+        <thead class="bg-gray-50">
+          <tr>
+            <th class="px-3 py-2 text-left font-medium text-gray-600">Fecha</th>
+            <th class="px-3 py-2 text-left font-medium text-gray-600">Bloque</th>
+            <th class="px-3 py-2 text-left font-medium text-gray-600">Tipo</th>
+            <th class="px-3 py-2 text-left font-medium text-gray-600">Hora</th>
+            <th class="px-3 py-2 text-left font-medium text-gray-600">Origen</th>
+            <th class="px-3 py-2 text-left font-medium text-gray-600">Motivo</th>
+            <th class="px-3 py-2 text-center font-medium text-gray-600">Corregir</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-gray-100">
+          @for (mark of activeMarks(); track mark.id) {
+            <tr class="hover:bg-gray-50" [class.opacity-50]="mark.isVoided">
+              <td class="px-3 py-2 text-gray-800">{{ mark.localDate }}</td>
+              <td class="px-3 py-2 text-gray-800">{{ mark.blockId }}</td>
+              <td class="px-3 py-2">
+                <span
+                  class="inline-flex rounded-full px-2 py-0.5 text-xs font-medium"
+                  [class.bg-blue-100]="mark.markKind === 'official'"
+                  [class.text-blue-700]="mark.markKind === 'official'"
+                  [class.bg-purple-100]="mark.markKind === 'special'"
+                  [class.text-purple-700]="mark.markKind === 'special'"
+                  [class.bg-yellow-100]="mark.markKind === 'correction'"
+                  [class.text-yellow-700]="mark.markKind === 'correction'">
+                  {{ markKindLabel(mark.markKind) }}
+                </span>
+              </td>
+              <td class="px-3 py-2 text-gray-800">{{ mark.entryTime ?? '-' }}</td>
+              <td class="px-3 py-2 text-gray-800">{{ mark.source }}</td>
+              <td class="px-3 py-2 text-gray-800 max-w-xs truncate">{{ mark.reason ?? '-' }}</td>
+              <td class="px-3 py-2 text-center">
+                <button
+                  type="button"
+                  class="text-blue-500 hover:text-blue-700 cursor-pointer transition-colors text-xs font-medium"
+                  (click)="openCorrection(mark)">
+                  Corregir
+                </button>
+              </td>
+            </tr>
+          } @empty {
+            <tr>
+              <td colspan="7" class="px-3 py-8 text-sm text-center text-gray-500">
+                No hay marcaciones para esta cuidadora.
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+
+  @if (!selectedCaregiverId()) {
+    <p class="text-sm text-gray-500 py-8 text-center">Selecciona una cuidadora para ver sus marcaciones.</p>
+  }
+
+  <!-- Correction modal -->
+  @if (isCorrectionOpen()) {
+    <app-modal
+      title="Corregir marcación"
+      size="sm"
+      (closed)="closeCorrection()">
+      <form (submit)="onSubmitCorrection()" class="p-4">
+        <p class="mb-4 text-sm text-gray-600">
+          Corrigiendo marcación del <strong>{{ correctionTarget()?.localDate }}</strong>
+          @if (correctionTarget()?.entryTime) {
+            — hora actual: <strong>{{ correctionTarget()?.entryTime }}</strong>
+          }
+        </p>
+
+        <div class="grid grid-cols-1 gap-4">
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Nueva hora</label>
+            <input
+              type="time"
+              [value]="correctionEntryTime()"
+              (input)="correctionEntryTime.set(($any($event.target).value))"
+              class="block w-full rounded-lg border border-gray-300 px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+            />
+          </div>
+
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Motivo de la corrección</label>
+            <textarea
+              [value]="correctionReason()"
+              (input)="correctionReason.set(($any($event.target).value))"
+              rows="2"
+              placeholder="Ej: Error de tipeo, la cuidadora entró a las 08:05..."
+              class="block w-full rounded-lg border border-gray-300 px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+            ></textarea>
+            @if (!correctionReason().trim() && correctionSubmitted()) {
+              <div class="mt-1 text-xs text-red-500">El motivo es obligatorio.</div>
+            }
+          </div>
+        </div>
+
+        <div class="flex justify-end gap-2 pt-6">
+          <app-button label="Cancelar" [outline]="true" (action)="closeCorrection()" />
+          <app-button
+            [label]="isSaving() ? 'Guardando...' : 'Guardar corrección'"
+            [disabled]="isSaving()"
+            type="submit"
+          />
+        </div>
+      </form>
+    </app-modal>
+  }
+</div>

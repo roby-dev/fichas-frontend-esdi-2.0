@@ -88,6 +88,12 @@ export class CaregiverAttendanceService {
     return this.http.post<MarkResponse>(`${this.baseUrl}/marks/assisted`, request);
   }
 
+  listMarksByCaregiver(caregiverId: string, localDate?: string): Observable<MarkResponse[]> {
+    const params: Record<string, string> = { caregiverId };
+    if (localDate) params['localDate'] = localDate;
+    return this.http.get<MarkResponse[]>(`${this.baseUrl}/marks`, { params });
+  }
+
   correctMark(id: string, request: CorrectMarkRequest): Observable<MarkResponse> {
     return this.http.patch<MarkResponse>(`${this.baseUrl}/marks/${id}/correction`, request);
   }

@@ -12,6 +12,15 @@
     <button
       type="button"
       class="rounded-lg px-3 py-2 text-sm font-medium transition-colors"
+      [class.bg-blue-500]="activeSection() === 'historial'"
+      [class.text-white]="activeSection() === 'historial'"
+      [class.text-gray-600]="activeSection() !== 'historial'"
+      (click)="setSection('historial')">
+      Historial
+    </button>
+    <button
+      type="button"
+      class="rounded-lg px-3 py-2 text-sm font-medium transition-colors"
       [class.bg-blue-500]="activeSection() === 'horarios'"
       [class.text-white]="activeSection() === 'horarios'"
       [class.text-gray-600]="activeSection() !== 'horarios'"
@@ -36,11 +45,32 @@
       (click)="setSection('reportes')">
       Reportes
     </button>
+    <button
+      type="button"
+      class="rounded-lg px-3 py-2 text-sm font-medium transition-colors"
+      [class.bg-blue-500]="activeSection() === 'excepciones'"
+      [class.text-white]="activeSection() === 'excepciones'"
+      [class.text-gray-600]="activeSection() !== 'excepciones'"
+      (click)="setSection('excepciones')">
+      Excepciones
+    </button>
+    <button
+      type="button"
+      class="rounded-lg px-3 py-2 text-sm font-medium transition-colors"
+      [class.bg-blue-500]="activeSection() === 'correcciones'"
+      [class.text-white]="activeSection() === 'correcciones'"
+      [class.text-gray-600]="activeSection() !== 'correcciones'"
+      (click)="setSection('correcciones')">
+      Correcciones
+    </button>
   </div>
 
   @switch (activeSection()) {
     @case ('caregivers') {
       <app-caregiver-management [mode]="mode()" />
+    }
+    @case ('historial') {
+      <app-assignment-history-view [mode]="mode()" />
     }
     @case ('horarios') {
       <app-schedule-version-list [mode]="mode()" />
@@ -50,6 +80,12 @@
     }
     @case ('reportes') {
       <app-report-view [mode]="mode()" />
+    }
+    @case ('excepciones') {
+      <app-exception-view [mode]="mode()" />
+    }
+    @case ('correcciones') {
+      <app-correction-view [mode]="mode()" />
     }
   }
 </div>

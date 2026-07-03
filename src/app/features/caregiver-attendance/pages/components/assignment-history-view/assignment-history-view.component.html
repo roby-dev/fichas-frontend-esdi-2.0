@@ -1,0 +1,67 @@
+<div>
+  <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between mb-4">
+    <h2 class="text-lg font-semibold">Historial de asignaciones</h2>
+  </div>
+
+  <div class="mb-4 sm:max-w-md">
+    <label class="block text-sm font-medium text-gray-700 mb-1">Madre cuidadora</label>
+    <select
+      [value]="selectedCaregiverId()"
+      (change)="onCaregiverChange($event)"
+      class="block w-full rounded-lg border border-gray-300 px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors">
+      <option value="">Selecciona una cuidadora</option>
+      @for (caregiver of activeCaregivers(); track caregiver.id) {
+        <option [value]="caregiver.id">
+          {{ caregiver.fullName }} ({{ caregiver.documentType }} {{ caregiver.documentNumber }})
+        </option>
+      }
+    </select>
+  </div>
+
+  @if (error()) {
+    <p class="text-sm text-red-600 py-2" role="alert">{{ error() }}</p>
+  }
+
+  @if (isLoading()) {
+    <p class="text-sm text-gray-500 py-8 text-center">Cargando historial de asignaciones...</p>
+  }
+
+  @if (!isLoading() && selectedCaregiverId()) {
+    <div class="overflow-x-auto bg-white shadow-sm rounded">
+      <table class="min-w-full divide-y divide-gray-200 text-sm">
+        <thead class="bg-gray-50">
+          <tr>
+            <th class="px-4 py-2 text-left font-medium text-gray-600">Local comunal</th>
+            <th class="px-4 py-2 text-left font-medium text-gray-600">Desde</th>
+            <th class="px-4 py-2 text-left font-medium text-gray-600">Hasta</th>
+            <th class="px-4 py-2 text-left font-medium text-gray-600">Estado</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-gray-100">
+          @for (row of rows(); track row.id) {
+            <tr class="hover:bg-gray-50">
+              <td class="px-4 py-2 text-gray-800">{{ row.hallName }}</td>
+              <td class="px-4 py-2 text-gray-800">{{ row.validFrom }}</td>
+              <td class="px-4 py-2 text-gray-800">{{ row.validTo }}</td>
+              <td class="px-4 py-2 text-gray-800">
+                <span [class]="statusBadgeCls(row.isActive)">
+                  {{ row.isActive ? 'Activa' : 'Histórica' }}
+                </span>
+              </td>
+            </tr>
+          } @empty {
+            <tr>
+              <td colspan="4" class="px-4 py-8 text-sm text-center text-gray-500">
+                No hay asignaciones registradas para esta cuidadora.
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+
+  @if (!selectedCaregiverId()) {
+    <p class="text-sm text-gray-500 py-8 text-center">Selecciona una cuidadora para ver su historial de asignaciones.</p>
+  }
+</div>
